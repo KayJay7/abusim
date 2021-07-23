@@ -8,7 +8,6 @@ import (
 	"steel-simulator-config/config"
 	"steel-simulator/args"
 	"steel-simulator/docker"
-	"sync"
 	"syscall"
 )
 
@@ -28,28 +27,7 @@ func Up(args *args.ArgsConfig, conf *config.Config, dcli *docker.DockerClient) {
 	}
 	if !args.Detached {
 		setupCloseHandler(conf, dcli)
-
-		lines := make(chan string)
-		wg := sync.WaitGroup{}
-		for name := range conf.Agents {
-			containerName := fmt.Sprintf("%s-%s", conf.Namespace, name)
-			wg.Add(1)
-			go func(containerName, name string, lines chan string) {
-				defer wg.Done()
-				err := dcli.GetAgentLogsLines(containerName, name, lines)
-				if err != nil {
-					log.Fatalln(err)
-				}
-			}(containerName, name, lines)
-		}
-		wg.Add(1)
-		go func() {
-			for {
-				line := <-lines
-				fmt.Println(line)
-			}
-		}()
-		wg.Wait()
+		LogsFollow(conf, dcli)
 	}
 }
 

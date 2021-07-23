@@ -26,5 +26,11 @@ func main() {
 		command.Up(argsConfig, conf, dcli)
 	case args.SUBCOMMAND_DOWN:
 		command.Down(conf, dcli)
+	case args.SUBCOMMAND_LOGS:
+		if argsConfig.FollowLogs {
+			command.LogsFollow(conf, dcli)
+		} else {
+			command.Logs(conf, dcli)
+		}
 	}
 }

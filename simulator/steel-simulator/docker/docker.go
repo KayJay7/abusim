@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"strings"
+	"time"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
@@ -63,14 +64,14 @@ func (d DockerClient) RemoveAgentContainer(containerName string) error {
 	return nil
 }
 
-func (d DockerClient) getAgentFollowLogs(containerName string) (io.ReadCloser, error) {
+func (d DockerClient) getAgentFollowLogs(containerName string, follow bool) (io.ReadCloser, error) {
 	reader, err := d.client.ContainerLogs(
 		context.Background(),
 		containerName,
 		types.ContainerLogsOptions{
 			ShowStdout: true,
 			ShowStderr: true,
-			Follow:     true,
+			Follow:     follow,
 		},
 	)
 
@@ -81,28 +82,36 @@ func (d DockerClient) getAgentFollowLogs(containerName string) (io.ReadCloser, e
 	return reader, nil
 }
 
-func (d DockerClient) GetAgentLogsLines(containerName, name string, lines chan string) error {
-	logs, err := d.getAgentFollowLogs(containerName)
+func (d DockerClient) GetAgentLogsLines(containerName, name string, lines chan string, follow bool) error {
+	logs, err := d.getAgentFollowLogs(containerName, follow)
 	if err != nil {
 		log.Fatalln(err)
 	}
+	close := make(chan struct{}, 1)
+	exitBell := time.AfterFunc(time.Second, func() { close <- struct{}{} })
 	reader := bufio.NewReader(logs)
-	for {
-		header := make([]byte, 8)
-		io.ReadFull(reader, header)
-		var bufLen uint32
-		bufLen |= uint32(header[4]) << 24
-		bufLen |= uint32(header[5]) << 16
-		bufLen |= uint32(header[6]) << 8
-		bufLen |= uint32(header[7])
-		buf := make([]byte, bufLen)
-		io.ReadFull(reader, buf)
-		bufLines := string(buf)
-		for _, line := range strings.Split(bufLines, "\n") {
-			if len(line) > 0 {
-				lines <- fmt.Sprintf("%s: %s", name, line)
+	go func() {
+		for {
+			header := make([]byte, 8)
+			io.ReadFull(reader, header)
+			var bufLen uint32
+			bufLen |= uint32(header[4]) << 24
+			bufLen |= uint32(header[5]) << 16
+			bufLen |= uint32(header[6]) << 8
+			bufLen |= uint32(header[7])
+			buf := make([]byte, bufLen)
+			io.ReadFull(reader, buf)
+			bufLines := string(buf)
+			for _, line := range strings.Split(bufLines, "\n") {
+				if len(line) > 0 {
+					lines <- fmt.Sprintf("%s: %s", name, line)
+					exitBell.Reset(time.Second)
+				}
 			}
 		}
+	}()
+	if !follow {
+		<-close
 	}
 	return nil
 }
