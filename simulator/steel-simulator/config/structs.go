@@ -1,17 +1,5 @@
 package config
 
-type Config struct {
-	Image     string
-	Namespace string
-	Agents    map[string]Agent
-}
-
-type Agent struct {
-	MemoryController string
-	Memory           map[string]map[string][]string
-	Rules            []string
-}
-
 type rawConfig struct {
 	Version    string                  `yaml:"version"`
 	Image      string                  `yaml:"image"`

@@ -1,5 +1,5 @@
 version: "1.0"
-image: "sim-agent"
+image: "steel-agent"
 namespace: "steel-simulator-example"
 agents:
   ag1:

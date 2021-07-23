@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"steel-simulator-config/config"
 
 	"gopkg.in/yaml.v2"
 )
 
-func Parse(filename string) (*Config, error) {
+func Parse(filename string) (*config.Config, error) {
 	rawConfig := parseRawConfig(filename)
 
 	switch rawConfig.Version {
@@ -19,13 +20,13 @@ func Parse(filename string) (*Config, error) {
 	}
 }
 
-func parseVersion1dot0(rawConfig rawConfig) (*Config, error) {
-	config := Config{}
-	config.Image = rawConfig.Image
-	config.Namespace = rawConfig.Namespace
-	config.Agents = make(map[string]Agent)
+func parseVersion1dot0(rawConfig rawConfig) (*config.Config, error) {
+	conf := config.Config{}
+	conf.Image = rawConfig.Image
+	conf.Namespace = rawConfig.Namespace
+	conf.Agents = make(map[string]config.Agent)
 	for name, agent := range rawConfig.Agents {
-		configAgent := NewAgent()
+		configAgent := config.NewAgent()
 		if agent.Prototype != "" {
 			if proto, ok := rawConfig.Prototypes[agent.Prototype]; ok {
 				configAgent.SetMemoryController(proto.MemoryController)
@@ -52,9 +53,9 @@ func parseVersion1dot0(rawConfig rawConfig) (*Config, error) {
 		for _, rule := range agent.Rules {
 			configAgent.AddRule(rule)
 		}
-		config.Agents[name] = *configAgent
+		conf.Agents[name] = *configAgent
 	}
-	return &config, nil
+	return &conf, nil
 }
 
 func parseRawConfig(filename string) rawConfig {

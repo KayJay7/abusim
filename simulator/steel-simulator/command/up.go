@@ -3,26 +3,22 @@ package command
 import (
 	"fmt"
 	"log"
-	"steel-simulator/config"
+	"steel-simulator-config/config"
+	"steel-simulator/docker"
 )
 
-func Up(conf *config.Config) {
-	log.Println("up command")
+func Up(conf *config.Config, dcli *docker.DockerClient) {
+	log.Println("Bringing up the environment...")
+
 	for name, agent := range conf.Agents {
-		log.Println("==========")
-		log.Println(name)
-		log.Println(agent.MemoryController)
-		log.Println(agent.Memory)
-		log.Println(agent.Rules)
-		serialization, err := agent.Serialize()
+		containerName := fmt.Sprintf("%s-%s", conf.Namespace, name)
+		agentSerialization, err := agent.Serialize()
 		if err != nil {
 			log.Fatalln(err)
 		}
-		log.Println(serialization)
-		newAgent := config.Agent{}
-		newAgent.Deserialize(serialization)
-		if fmt.Sprint(agent) != fmt.Sprint(newAgent) {
-			log.Fatalln("Deserialized object is non identical to the original one")
+		err = dcli.CreateAndRunAgentContainer(conf.Image, containerName, agentSerialization)
+		if err != nil {
+			log.Fatalln(err)
 		}
 	}
 }
