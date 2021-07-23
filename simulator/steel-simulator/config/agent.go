@@ -1,6 +1,9 @@
 package config
 
 import (
+	"bytes"
+	"encoding/base64"
+	"encoding/gob"
 	"fmt"
 	"strings"
 )
@@ -45,4 +48,27 @@ func (a *Agent) AddMemoryItem(item string) error {
 
 func (a *Agent) AddRule(rule string) {
 	a.Rules = append(a.Rules, rule)
+}
+
+func (a *Agent) Serialize() (string, error) {
+	b := bytes.Buffer{}
+	err := gob.NewEncoder(&b).Encode(a)
+	if err != nil {
+		return "", err
+	}
+	return base64.StdEncoding.EncodeToString(b.Bytes()), nil
+}
+
+func (a *Agent) Deserialize(str string) error {
+	by, err := base64.StdEncoding.DecodeString(str)
+	if err != nil {
+		return err
+	}
+	b := bytes.Buffer{}
+	b.Write(by)
+	err = gob.NewDecoder(&b).Decode(&a)
+	if err != nil {
+		return err
+	}
+	return nil
 }
