@@ -21,6 +21,8 @@ func Parse(filename string) (*Config, error) {
 
 func parseVersion1dot0(rawConfig rawConfig) (*Config, error) {
 	config := Config{}
+	config.Image = rawConfig.Image
+	config.Namespace = rawConfig.Namespace
 	config.Agents = make(map[string]Agent)
 	for name, agent := range rawConfig.Agents {
 		configAgent := NewAgent()

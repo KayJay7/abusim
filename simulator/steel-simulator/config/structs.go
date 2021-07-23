@@ -1,7 +1,9 @@
 package config
 
 type Config struct {
-	Agents map[string]Agent
+	Image     string
+	Namespace string
+	Agents    map[string]Agent
 }
 
 type Agent struct {
@@ -12,6 +14,8 @@ type Agent struct {
 
 type rawConfig struct {
 	Version    string                  `yaml:"version"`
+	Image      string                  `yaml:"image"`
+	Namespace  string                  `yaml:"namespace"`
 	Agents     map[string]rawAgent     `yaml:"agents"`
 	Prototypes map[string]rawPrototype `yaml:"prototypes"`
 }
