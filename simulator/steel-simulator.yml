@@ -1,0 +1,19 @@
+version: "1.0"
+agents:
+  ag1:
+    prototype: example
+    rules:
+      - rule r2;
+    memorycontroller: gobot
+  ag2:
+    prototype: example
+    memory:
+      - bool:button:false
+prototypes:
+  example:
+    memorycontroller: basic
+    memory:
+      - bool:button
+      - bool:involved:false
+    rules:
+      - rule r1 on button; default involved = false; for all ext.involved == false do involved = true;
