@@ -15,14 +15,17 @@ const (
 type ArgsConfig struct {
 	ConfigFile string
 	SubCommand SubCommand
+	Detached   bool
 }
 
-func ParseArgs() ArgsConfig {
+func ParseArgs() *ArgsConfig {
 	config := ArgsConfig{}
 
 	flag.StringVar(&config.ConfigFile, "c", "steel-simulator.yml", "configuration file")
 
 	upCmd := flag.NewFlagSet("up", flag.ExitOnError)
+	upCmd.BoolVar(&config.Detached, "d", false, "detached")
+
 	downCmd := flag.NewFlagSet("down", flag.ExitOnError)
 
 	flag.Parse()
@@ -44,5 +47,5 @@ func ParseArgs() ArgsConfig {
 		log.Fatalf("unknown subcommand '%s', see help for more details.", args[0])
 	}
 
-	return config
+	return &config
 }

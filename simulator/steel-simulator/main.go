@@ -23,7 +23,7 @@ func main() {
 
 	switch argsConfig.SubCommand {
 	case args.SUBCOMMAND_UP:
-		command.Up(conf, dcli)
+		command.Up(argsConfig, conf, dcli)
 	case args.SUBCOMMAND_DOWN:
 		command.Down(conf, dcli)
 	}
