@@ -6,7 +6,6 @@ agents:
     prototype: example
     rules:
       - rule r2;
-    memorycontroller: gobot
   ag2:
     prototype: example
     memory:
