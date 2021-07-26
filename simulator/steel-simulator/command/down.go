@@ -17,4 +17,12 @@ func Down(conf *config.Config, dcli *docker.DockerClient) {
 			log.Println(err)
 		}
 	}
+
+	if err := dcli.RemoveContainer(fmt.Sprintf("%s-coordinator", conf.Namespace)); err != nil {
+		log.Println(err)
+	}
+
+	if err := dcli.RemoveNetworks(conf.Namespace); err != nil {
+		log.Println(err)
+	}
 }

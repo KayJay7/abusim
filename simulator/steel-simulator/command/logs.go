@@ -11,6 +11,14 @@ import (
 func LogsFollow(conf *config.Config, dcli *docker.DockerClient) {
 	lines := make(chan string)
 	wg := sync.WaitGroup{}
+	wg.Add(1)
+	go func(lines chan string) {
+		defer wg.Done()
+		err := dcli.GetContainerLogsLines(fmt.Sprintf("%s-coordinator", conf.Namespace), "coordinator", lines, true)
+		if err != nil {
+			log.Fatalln(err)
+		}
+	}(lines)
 	for name := range conf.Agents {
 		containerName := fmt.Sprintf("%s-%s", conf.Namespace, name)
 		wg.Add(1)
@@ -35,6 +43,12 @@ func LogsFollow(conf *config.Config, dcli *docker.DockerClient) {
 func Logs(conf *config.Config, dcli *docker.DockerClient) {
 	lines := make(chan string)
 	close := make(chan struct{}, len(conf.Agents))
+	go func(lines chan string) {
+		err := dcli.GetContainerLogsLines(fmt.Sprintf("%s-coordinator", conf.Namespace), "coordinator", lines, true)
+		if err != nil {
+			log.Fatalln(err)
+		}
+	}(lines)
 	for name := range conf.Agents {
 		containerName := fmt.Sprintf("%s-%s", conf.Namespace, name)
 		go func(containerName, name string, lines chan string) {

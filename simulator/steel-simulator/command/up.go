@@ -14,13 +14,21 @@ import (
 func Up(args *args.ArgsConfig, conf *config.Config, dcli *docker.DockerClient) {
 	log.Println("Bringing up the environment...")
 
+	if err := dcli.CreateNetworks(conf.Namespace); err != nil {
+		log.Fatalln(err)
+	}
+
+	if err := dcli.CreateAndRunCoordinatorContainer(conf.Namespace); err != nil {
+		log.Fatalln(err)
+	}
+
 	for name, agent := range conf.Agents {
 		containerName := fmt.Sprintf("%s-%s", conf.Namespace, name)
 		agentSerialization, err := agent.Serialize()
 		if err != nil {
 			log.Fatalln(err)
 		}
-		err = dcli.CreateAndRunAgentContainer(conf.Image, containerName, agentSerialization)
+		err = dcli.CreateAndRunAgentContainer(conf.Namespace, conf.Image, containerName, agentSerialization)
 		if err != nil {
 			log.Fatalln(err)
 		}
