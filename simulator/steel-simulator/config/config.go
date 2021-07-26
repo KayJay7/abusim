@@ -26,7 +26,7 @@ func parseVersion1dot0(rawConfig rawConfig) (*config.Config, error) {
 	conf.Namespace = rawConfig.Namespace
 	conf.Agents = make(map[string]config.Agent)
 	for name, agent := range rawConfig.Agents {
-		configAgent := config.NewAgent()
+		configAgent := config.NewAgent(name)
 		if agent.Prototype != "" {
 			if proto, ok := rawConfig.Prototypes[agent.Prototype]; ok {
 				configAgent.SetMemoryController(proto.MemoryController)
