@@ -12,7 +12,7 @@ func Down(conf *config.Config, dcli *docker.DockerClient) {
 
 	for name := range conf.Agents {
 		containerName := fmt.Sprintf("%s-%s", conf.Namespace, name)
-		err := dcli.RemoveAgentContainer(containerName)
+		err := dcli.RemoveContainer(containerName)
 		if err != nil {
 			log.Println(err)
 		}

@@ -16,7 +16,7 @@ func LogsFollow(conf *config.Config, dcli *docker.DockerClient) {
 		wg.Add(1)
 		go func(containerName, name string, lines chan string) {
 			defer wg.Done()
-			err := dcli.GetAgentLogsLines(containerName, name, lines, true)
+			err := dcli.GetContainerLogsLines(containerName, name, lines, true)
 			if err != nil {
 				log.Fatalln(err)
 			}
@@ -38,7 +38,7 @@ func Logs(conf *config.Config, dcli *docker.DockerClient) {
 	for name := range conf.Agents {
 		containerName := fmt.Sprintf("%s-%s", conf.Namespace, name)
 		go func(containerName, name string, lines chan string) {
-			err := dcli.GetAgentLogsLines(containerName, name, lines, false)
+			err := dcli.GetContainerLogsLines(containerName, name, lines, false)
 			if err != nil {
 				log.Fatalln(err)
 			}

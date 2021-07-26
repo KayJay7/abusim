@@ -10,42 +10,9 @@ import (
 	"time"
 
 	"github.com/docker/docker/api/types"
-	"github.com/docker/docker/api/types/container"
 )
 
-func (d DockerClient) CreateAndRunAgentContainer(image string, containerName string, agentSerialization string) error {
-	cmd := []string{agentSerialization}
-	config := &container.Config{
-		Image:    image,
-		Hostname: containerName,
-		Cmd:      cmd,
-	}
-
-	cont, err := d.client.ContainerCreate(
-		context.Background(),
-		config,
-		nil,
-		nil,
-		nil,
-		containerName,
-	)
-
-	if err != nil {
-		if strings.HasPrefix(err.Error(), "Error response from daemon: Conflict.") {
-			log.Printf("Found container \"%s\", recreating", containerName)
-			d.RemoveAgentContainer(containerName)
-			return d.CreateAndRunAgentContainer(image, containerName, agentSerialization)
-		}
-		return err
-	}
-
-	d.client.ContainerStart(context.Background(), cont.ID, types.ContainerStartOptions{})
-	log.Printf("Created container \"%s\" with ID %s", containerName, cont.ID)
-
-	return nil
-}
-
-func (d DockerClient) RemoveAgentContainer(containerName string) error {
+func (d DockerClient) RemoveContainer(containerName string) error {
 	err := d.client.ContainerRemove(
 		context.Background(),
 		containerName,
@@ -64,7 +31,7 @@ func (d DockerClient) RemoveAgentContainer(containerName string) error {
 	return nil
 }
 
-func (d DockerClient) getAgentFollowLogs(containerName string, follow bool) (io.ReadCloser, error) {
+func (d DockerClient) getLogs(containerName string, follow bool) (io.ReadCloser, error) {
 	reader, err := d.client.ContainerLogs(
 		context.Background(),
 		containerName,
@@ -82,8 +49,8 @@ func (d DockerClient) getAgentFollowLogs(containerName string, follow bool) (io.
 	return reader, nil
 }
 
-func (d DockerClient) GetAgentLogsLines(containerName, name string, lines chan string, follow bool) error {
-	logs, err := d.getAgentFollowLogs(containerName, follow)
+func (d DockerClient) GetContainerLogsLines(containerName, name string, lines chan string, follow bool) error {
+	logs, err := d.getLogs(containerName, follow)
 	if err != nil {
 		log.Fatalln(err)
 	}
