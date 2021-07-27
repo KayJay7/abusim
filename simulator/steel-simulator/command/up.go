@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
-	"steel-simulator-config/config"
+	"steel-simulator-common/config"
 	"steel-simulator/args"
 	"steel-simulator/docker"
 	"syscall"

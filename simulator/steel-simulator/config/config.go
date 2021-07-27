@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"steel-simulator-config/config"
+	"steel-simulator-common/config"
 
 	"gopkg.in/yaml.v2"
 )
