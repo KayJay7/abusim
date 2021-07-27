@@ -30,6 +30,7 @@ func parseVersion1dot0(rawConfig rawConfig) (*config.Config, error) {
 		if agent.Prototype != "" {
 			if proto, ok := rawConfig.Prototypes[agent.Prototype]; ok {
 				configAgent.SetMemoryController(proto.MemoryController)
+				configAgent.SetTick(proto.Tick)
 				for _, item := range proto.Memory {
 					err := configAgent.AddMemoryItem(item)
 					if err != nil {
@@ -44,6 +45,7 @@ func parseVersion1dot0(rawConfig rawConfig) (*config.Config, error) {
 			}
 		}
 		configAgent.SetMemoryController(agent.MemoryController)
+		configAgent.SetTick(agent.Tick)
 		for _, item := range agent.Memory {
 			err := configAgent.AddMemoryItem(item)
 			if err != nil {

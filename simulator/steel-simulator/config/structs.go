@@ -17,4 +17,5 @@ type rawPrototype struct {
 	MemoryController string   `yaml:"memorycontroller"`
 	Memory           []string `yaml:"memory"`
 	Rules            []string `yaml:"rules"`
+	Tick             string   `yaml:"tick"`
 }

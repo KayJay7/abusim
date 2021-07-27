@@ -4,6 +4,7 @@ namespace: "steel-simulator-example"
 agents:
   ag1:
     prototype: example
+    tick: 500ms
   ag2:
     prototype: example
     memory:
@@ -11,6 +12,7 @@ agents:
 prototypes:
   example:
     memorycontroller: basic
+    tick: 1s
     memory:
       - bool:button
       - bool:involved:false
