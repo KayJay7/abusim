@@ -2,6 +2,8 @@ import { createApp } from 'vue'
 import App from './App.vue';
 
 import PrimeVue from 'primevue/config';
+import SpeedDial from 'primevue/speeddial';
+
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import Toast from 'primevue/toast';
@@ -15,6 +17,8 @@ const app = createApp(App);
 
 app.use(PrimeVue);
 app.use(ToastService);
+
+app.component('SpeedDial', SpeedDial);
 
 app.component('InputText', InputText);
 app.component('Button', Button);
