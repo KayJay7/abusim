@@ -4,8 +4,6 @@ namespace: "steel-simulator-example"
 agents:
   ag1:
     prototype: example
-    rules:
-      - rule r2;
   ag2:
     prototype: example
     memory:

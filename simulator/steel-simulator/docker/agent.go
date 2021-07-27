@@ -17,8 +17,9 @@ func (d DockerClient) CreateAndRunAgentContainer(namespace, image, containerName
 
 	networkConfig := &network.NetworkingConfig{
 		EndpointsConfig: map[string]*network.EndpointSettings{
-			fmt.Sprintf("%s-control", namespace): {
-				NetworkID: fmt.Sprintf("%s-control", namespace),
+			fmt.Sprintf("%s-data", namespace): {
+				NetworkID: fmt.Sprintf("%s-data", namespace),
+				Aliases:   []string{fmt.Sprintf("%s-on-data", containerName)},
 			},
 		},
 	}
@@ -53,7 +54,7 @@ func (d DockerClient) CreateAndRunAgentContainer(namespace, image, containerName
 		return err
 	}
 
-	if err := d.client.NetworkConnect(context.Background(), fmt.Sprintf("%s-data", namespace), cont.ID, nil); err != nil {
+	if err := d.client.NetworkConnect(context.Background(), fmt.Sprintf("%s-control", namespace), cont.ID, nil); err != nil {
 		return err
 	}
 

@@ -22,7 +22,10 @@ func Up(args *args.ArgsConfig, conf *config.Config, dcli *docker.DockerClient) {
 		log.Fatalln(err)
 	}
 
+	endpoints := []string{}
+
 	for name, agent := range conf.Agents {
+		agent.SetEndpoints(endpoints)
 		containerName := fmt.Sprintf("%s-%s", conf.Namespace, name)
 		agentSerialization, err := agent.Serialize()
 		if err != nil {
@@ -32,6 +35,7 @@ func Up(args *args.ArgsConfig, conf *config.Config, dcli *docker.DockerClient) {
 		if err != nil {
 			log.Fatalln(err)
 		}
+		endpoints = append(endpoints, fmt.Sprintf("%s-on-data:5000", containerName))
 	}
 	if !args.Detached {
 		setupCloseHandler(conf, dcli)
