@@ -1,24 +1,44 @@
 <template>
   <div id="app">
+    <div id="app-content">
+      <Agents :configsource="configSourceCode"/>
+    </div>
     <SpeedDial :model="commands" :radius="140" direction="up-left" type="quarter-circle" :style="{ position: 'fixed', bottom: '25px', right: '25px'}" />
     <Toast/>
+    <input id="config-file-input" type="file" style="display: none;" @change="uploadConfigFile" />
   </div>
 </template>
 
 <script>
 import { ref } from 'vue';
-import { useToast } from "primevue/usetoast";
+import { useToast } from 'primevue/usetoast';
+
+import Agents from './components/Agents.vue'
 
 export default {
+  components: {
+    Agents
+  },
   setup() {
     const toast = useToast();
+
+    const configSourceCode = ref('')
+
+    const uploadConfigFile = (evt) => {
+      const reader = new FileReader()
+      reader.onload = (evt) => {
+        configSourceCode.value = evt.target.result
+        toast.add({ severity: 'success', summary: 'Config load', detail: 'Config loaded', life: 3000 });
+      };
+      reader.readAsText(evt.target.files[0])
+    }
 
     const commands = ref([
         {
             label: 'Config load',
             icon: 'pi pi-upload',
             command: () => {
-                toast.add({ severity: 'success', summary: 'Config load', detail: 'Config loaded', life: 3000 });
+                document.querySelector('#config-file-input').click()
             }
         },
         {
@@ -32,6 +52,7 @@ export default {
             label: 'Config reset',
             icon: 'pi pi-trash',
             command: () => {
+                configSourceCode.value = ''
                 toast.add({ severity: 'error', summary: 'Config reset', detail: 'Config removed', life: 3000 });
             }
         },
@@ -44,7 +65,11 @@ export default {
         }
     ]);
 
-    return { commands }
+    return {
+      configSourceCode,
+      uploadConfigFile,
+      commands
+    }
   }
 }
 </script>
@@ -54,7 +79,12 @@ export default {
   font-family: Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+}
+
+#app-content {
+  width: 100%;
+  height: 100%;
+  padding: 25px;
 }
 </style>
