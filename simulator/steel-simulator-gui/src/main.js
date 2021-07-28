@@ -14,6 +14,8 @@ import DataViewLayoutOptions from 'primevue/dataviewlayoutoptions';
 import TreeTable from 'primevue/treetable';
 import Column from 'primevue/column';
 import ProgressBar from 'primevue/progressbar';
+import InputText from 'primevue/inputtext';
+import Button from 'primevue/button';
 
 import 'primevue/resources/themes/saga-blue/theme.css';
 import 'primevue/resources/primevue.min.css';
@@ -42,5 +44,7 @@ app.component('DataViewLayoutOptions', DataViewLayoutOptions);
 app.component('TreeTable', TreeTable);
 app.component('Column', Column);
 app.component('ProgressBar', ProgressBar);
+app.component('InputText', InputText);
+app.component('Button', Button);
 
 app.mount('#app')

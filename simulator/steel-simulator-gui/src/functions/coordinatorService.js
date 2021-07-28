@@ -46,3 +46,21 @@ export function decorateAgentMemory(agentObj) {
     })
   }
 }
+
+export function postAgentInput(agentName, input) {
+  return fetch(`${api}/memory/${agentName}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      actions: input
+    })
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  })
+}

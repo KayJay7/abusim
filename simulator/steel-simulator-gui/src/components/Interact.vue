@@ -18,6 +18,13 @@
         <div class="p-col-12 p-md-4">
           <div class="agent-grid-item p-shadow-6">
             <h1 class="agent-grid-item-title">{{slotProps.data.name}}</h1>
+            <div class="p-inputgroup" style="margin-bottom: .5em;">
+              <span class="p-inputgroup-addon">
+                <i class="pi pi-play"></i>
+              </span>
+              <InputText placeholder="Input" v-model="slotProps.data.input"/>
+              <Button icon="pi pi-send" :disabled="slotProps.data.input == ''" @click="sendInput(slotProps.data.name, slotProps.data.input)"/>
+            </div>
             <TreeTable :value="slotProps.data.memoryTree" class="p-treetable-sm treetable-very-sm">
                 <Column field="name" header="Name" :expander="true"></Column>
                 <Column field="value" header="Value"></Column>
@@ -32,7 +39,7 @@
 <script>
 import { ref, watch, onMounted } from "vue";
 
-import { getAgentMemory, decorateAgentMemory } from '@/functions/coordinatorService'
+import { getAgentMemory, decorateAgentMemory, postAgentInput } from '@/functions/coordinatorService'
 
 export default {
   name: 'Interact',
@@ -74,17 +81,27 @@ export default {
     }
 
     const refreshAgents = () => {
-      console.log(agents.value);
       agents.value.forEach((oldAgent, index, agentsValue) => {
         getAgentMemory(oldAgent.name)
         .then(agent => {
-          agentsValue[index] = agent
+          agentsValue[index].memory = agent.memory
           decorateAgentMemory(agentsValue[index])
         })
         .catch(error => {
-          console.error('There has been a problem with your fetch operation:', error);
+          console.error('There has been a problem with your fetch operation:', error)
         })
-      });
+      })
+    }
+
+    const sendInput = (agentName, input) => {
+      postAgentInput(agentName, input)
+      .then(response => {
+        agents.value.filter(a => a.name == agentName)[0].input = ''
+        console.log(response)
+      })
+      .catch(error => {
+        console.error('There has been a problem with your fetch operation:', error)
+      })
     }
 
     watch(() => props.agentsList, () => {
@@ -104,7 +121,8 @@ export default {
       agents,
       layout,
       interval,
-      countdown
+      countdown,
+      sendInput
     }
   }
 }
@@ -134,7 +152,7 @@ export default {
 }
 
 .p-dataview >>> .treetable-very-sm {
-  font-size: .75em;
+  font-size: .85em;
 }
 
 .p-dataview >>> .treetable-very-sm tr td{
