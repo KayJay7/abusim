@@ -21,7 +21,7 @@
         <i class="pi pi-comments sep-pi"></i>
         <span>Interact</span>
       </template>
-      <Interact v-if="config != null" :agents-list="agentsList" :refresh-rate="10"/>
+      <Interact v-if="config != null" :agents-list="agentsList" :refresh-rate="10" :refresh="refresh"/>
       <Message v-else severity="warn" :closable="false">No config loaded, please add one using the button below</Message>
     </TabPanel>
   </TabView>
@@ -39,7 +39,8 @@ import Interact from '@/components/Interact.vue'
 export default {
   name: 'Agents',
   props: [
-    'configsource'
+    'configSource',
+    'refresh'
   ],
   components: {
     Interact
@@ -52,7 +53,7 @@ export default {
     const configTree = ref([])
     const agentsList = ref([])
 
-    watch(() => props.configsource, (current) => {
+    watch(() => props.configSource, (current) => {
       if (current == '') {
         config.value = null
         configSourceCode.value = ''

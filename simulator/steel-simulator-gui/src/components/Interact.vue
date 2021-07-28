@@ -59,7 +59,8 @@ export default {
   name: 'Interact',
   props: [
     'agentsList',
-    'refreshRate'
+    'refreshRate',
+    'refresh'
   ],
   setup(props) {
     const toast = useToast()
@@ -117,7 +118,7 @@ export default {
       postAgentInput(agentName, input)
       .then(() => {
         agents.value.filter(a => a.name == agentName)[0].input = ''
-        toast.add({ severity: 'success', summary: 'Input', detail: `Input performed succesfully` })
+        toast.add({ severity: 'success', summary: 'Input', detail: `Input performed succesfully`, life: 3000 })
       })
       .catch(error => {
         toast.add({ severity: 'error', summary: 'API Error', detail: `There has been a problem with the API operation: ${error}` })
@@ -136,6 +137,11 @@ export default {
 
     watch(() => props.refreshRate, (current) => {
       updateRefreshInterval(current)
+    })
+
+    watch(() => props.refresh, () => {
+      refreshAgents()
+      countdown.value = 100
     })
 
     onMounted(() => {

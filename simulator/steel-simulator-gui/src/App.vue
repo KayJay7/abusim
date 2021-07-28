@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div id="app-content">
-      <Agents :configsource="configSourceCode" />
+      <Agents :config-source="configSourceCode" :refresh="refreshClick"/>
     </div>
     <SpeedDial :model="commands" :radius="140" direction="up-left" type="quarter-circle" :disabled="!online" :style="{ position: 'fixed', bottom: '25px', right: '25px'}" />
     <Toast/>
@@ -26,6 +26,7 @@ export default {
 
     const configSourceCode = ref('')
     const online = ref(false)
+    const refreshClick = ref(false)
 
     const checkOnline = () => {
       ping().then(res => {
@@ -59,7 +60,8 @@ export default {
         label: 'Refresh',
         icon: 'pi pi-refresh',
         command: () => {
-          toast.add({ severity: 'info', summary: 'Refresh', detail: 'Data refreshed', life: 3000 })
+          toast.add({ severity: 'info', summary: 'Refresh', detail: 'Data manually refreshed', life: 3000 })
+          refreshClick.value = ! refreshClick.value
         }
       },
       {
@@ -90,7 +92,8 @@ export default {
       configSourceCode,
       uploadConfigFile,
       commands,
-      online
+      online,
+      refreshClick
     }
   }
 }
