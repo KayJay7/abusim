@@ -21,7 +21,7 @@
         <i class="pi pi-comments sep-pi"></i>
         <span>Interact</span>
       </template>
-      <Interact v-if="config != null" :agents-list="agentsList" :refresh-rate="10" :refresh="refresh"/>
+      <Interact v-if="config != null" :agents-list="agentsList" :refresh-rate="refreshRate" :refresh="refresh"/>
       <Message v-else severity="warn" :closable="false">No config loaded, please add one using the button below</Message>
     </TabPanel>
   </TabView>
@@ -40,7 +40,8 @@ export default {
   name: 'Agents',
   props: [
     'configSource',
-    'refresh'
+    'refresh',
+    'refreshRate'
   ],
   components: {
     Interact

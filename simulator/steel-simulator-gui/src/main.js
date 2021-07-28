@@ -16,6 +16,9 @@ import Column from 'primevue/column';
 import ProgressBar from 'primevue/progressbar';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
+import Dialog from 'primevue/dialog';
+import SelectButton from 'primevue/selectbutton';
+import InputNumber from 'primevue/inputnumber';
 
 import 'primevue/resources/themes/saga-blue/theme.css';
 import 'primevue/resources/primevue.min.css';
@@ -46,5 +49,8 @@ app.component('Column', Column);
 app.component('ProgressBar', ProgressBar);
 app.component('InputText', InputText);
 app.component('Button', Button);
+app.component('Dialog', Dialog);
+app.component('SelectButton', SelectButton);
+app.component('InputNumber', InputNumber);
 
 app.mount('#app')

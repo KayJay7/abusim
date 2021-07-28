@@ -1,9 +1,10 @@
 <template>
   <div id="app">
     <div id="app-content">
-      <Agents :config-source="configSourceCode" :refresh="refreshClick"/>
+      <Agents :config-source="configSourceCode" :refresh="refreshClick" :refresh-rate="refreshRate"/>
     </div>
     <SpeedDial :model="commands" :radius="140" direction="up-left" type="quarter-circle" :disabled="!online" :style="{ position: 'fixed', bottom: '25px', right: '25px'}" />
+    <Settings :visible="settingsVisible" @update="updateSettings" @close="closeSettings"/>
     <Toast/>
     <input id="config-file-input" type="file" style="display: none;" @change="uploadConfigFile" />
   </div>
@@ -16,10 +17,12 @@ import { useToast } from 'primevue/usetoast';
 import { ping } from '@/functions/coordinatorService'
 
 import Agents from '@/components/Agents.vue'
+import Settings from '@/components/Settings.vue'
 
 export default {
   components: {
-    Agents
+    Agents,
+    Settings
   },
   setup() {
     const toast = useToast()
@@ -27,6 +30,8 @@ export default {
     const configSourceCode = ref('')
     const online = ref(false)
     const refreshClick = ref(false)
+    const refreshRate = ref(30)
+    const settingsVisible = ref(false)
 
     const checkOnline = () => {
       ping().then(res => {
@@ -46,6 +51,14 @@ export default {
         toast.add({ severity: 'success', summary: 'Config load', detail: 'Config uploaded', life: 3000 })
       };
       reader.readAsText(evt.target.files[0])
+    }
+
+    const updateSettings = (settings) => {
+      refreshRate.value = settings.autoRefresh ? settings.autoRefreshInterval : null
+    }
+
+    const closeSettings = () => {
+      settingsVisible.value = false
     }
 
     const commands = ref([
@@ -76,9 +89,9 @@ export default {
         label: 'Settings',
         icon: 'pi pi-cog',
         command: () => {
-          toast.add({ severity: 'info', summary: 'Settings', detail: 'Opened settings', life: 3000 })
-        },
-        disabled: true
+          settingsVisible.value = true
+          // toast.add({ severity: 'info', summary: 'Settings', detail: 'Opened settings', life: 3000 })
+        }
       }
     ])
 
@@ -93,7 +106,11 @@ export default {
       uploadConfigFile,
       commands,
       online,
-      refreshClick
+      refreshClick,
+      refreshRate,
+      settingsVisible,
+      updateSettings,
+      closeSettings
     }
   }
 }

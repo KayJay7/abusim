@@ -1,7 +1,7 @@
 <template>
   <div>
-    <ProgressBar :value="countdown" :showValue="false" style="height: .5em; margin-bottom: 1em;" />
-    <DataView :value="agents" :layout="layout" :paginator="true" :rows="9">
+    <ProgressBar v-if="refreshRate != null" :value="countdown" :showValue="false" style="height: .5em; margin-bottom: 1em;" />
+    <DataView :value="agents" :layout="layout" :paginator="true" :rows="6">
       <template #header>
         <DataViewLayoutOptions v-model="layout" />
       </template>
@@ -71,7 +71,8 @@ export default {
     const interval = ref(null)
 
     const updateRefreshInterval = (refreshRate) => {
-      if (refreshRate) {
+      stopRefreshInterval()
+      if (refreshRate != null) {
         interval.value = setInterval(() => {
           countdown.value -= 10
           if (countdown.value < 0) {
@@ -79,16 +80,12 @@ export default {
             countdown.value = 100
           }
         }, refreshRate / 10 * 1000);
-      } else {
-        stopRefreshInterval()
       }
     }
 
     const stopRefreshInterval = () => {
-      if (interval.value) {
-        clearInterval(interval.value)
-      }
-      interval.value = null
+      clearInterval(interval.value)
+      countdown.value = 100
     }
 
     const loadAgents = () => {
@@ -165,38 +162,38 @@ export default {
 </script>
 
 <style lang="css" scoped>
-.p-dataview >>> .p-dataview-header {
+::v-deep(.p-dataview-header) {
   text-align: right;
 }
 
-.p-dataview >>> .agent-list-item {
+::v-deep(.agent-list-item) {
   background: #ffffff;
   padding: 1rem;
 }
-.p-dataview >>> .agent-list-item-title {
+::v-deep(.agent-list-item-title) {
   text-align: center;
   font-size: 1.5em;
   margin: 0;
 }
 
-.p-dataview >>> .agent-grid-item {
+::v-deep(.agent-grid-item) {
   background: #ffffff;
   padding: 2rem;
   border-radius: 4px;
   margin: 1rem;
 }
 
-.p-dataview >>> .agent-grid-item-title {
+::v-deep(.agent-grid-item-title) {
   text-align: center;
   font-size: 1.5em;
   margin-top: 0;
 }
 
-.p-dataview >>> .treetable-very-sm {
+::v-deep(.treetable-very-sm) {
   font-size: .85em;
 }
 
-.p-dataview >>> .treetable-very-sm tr td{
+::v-deep(.treetable-very-sm tr td) {
   padding: 0 0.5rem !important;
 }
 </style>
