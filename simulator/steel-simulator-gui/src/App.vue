@@ -13,7 +13,7 @@
 import { ref } from 'vue';
 import { useToast } from 'primevue/usetoast';
 
-import Agents from './components/Agents.vue'
+import Agents from '@/components/Agents.vue'
 
 export default {
   components: {

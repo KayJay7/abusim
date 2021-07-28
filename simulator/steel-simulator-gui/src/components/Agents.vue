@@ -21,7 +21,7 @@
         <i class="pi pi-comments sep-pi"></i>
         <span>Interact</span>
       </template>
-      <Message v-if="config != null" severity="success" :closable="false">Interact here</Message>
+      <Interact v-if="config != null" :agents-list="agentsList" :refresh-rate="10"/>
       <Message v-else severity="warn" :closable="false">No config loaded, please add one using the button below</Message>
     </TabPanel>
   </TabView>
@@ -33,6 +33,8 @@ import { ref, watch } from 'vue';
 import { configParse, getConfigTree, decorateAgentTree } from '@/functions/configParse'
 import { getAgentConfig } from '@/functions/coordinatorService'
 
+import Interact from '@/components/Interact.vue'
+
 export default {
   name: 'Agents',
   props: [
@@ -41,23 +43,28 @@ export default {
   emits: [
     'invalid-config'
   ],
+  components: {
+    Interact
+  },
   setup(props, { emit }) {
     const config = ref(null)
     const configSourceCode = ref('')
     const configTree = ref([])
+    const agentsList = ref([])
 
     watch(() => props.configsource, (current) => {
       if (current == '') {
         config.value = null
         configSourceCode.value = ''
+        agentsList.value = []
         configTree.value = {}
         return
       }
       var configDoc = configParse(current)
-      console.log(configDoc);
       if (configDoc != null) {
         config.value = configDoc
         configSourceCode.value = current
+        agentsList.value = Object.keys(configDoc['agents'])
         configTree.value = getConfigTree(configDoc)
         configTree.value[0].children.forEach((agentTree) => {
         getAgentConfig(agentTree.label)
@@ -76,7 +83,8 @@ export default {
     return {
       config,
       configSourceCode,
-      configTree
+      configTree,
+      agentsList
     }
   }
 }

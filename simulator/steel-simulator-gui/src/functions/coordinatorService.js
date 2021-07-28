@@ -9,3 +9,40 @@ export function getAgentConfig(agentName) {
     return response.json();
   })
 }
+
+export function getAgentMemory(agentName) {
+  return fetch(`${api}/memory/${agentName}`)
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  })
+}
+
+export function decorateAgentMemory(agentObj) {
+  agentObj.memoryTree = []
+  if (! agentObj.memory) {
+    return
+  }
+  if (agentObj.memory.bool != {}) {
+    var bools = []
+    for (const [name, value] of Object.entries(agentObj.memory.bool)) {
+      bools.push({
+        key: `${agentObj.name}-memory-bool-${name}`,
+        data: {
+          name,
+          value,
+        },
+      })
+    }
+    agentObj.memoryTree.push({
+      key: `${agentObj.name}-memory-bool`,
+      data: {
+        name: "Bool",
+        value: "",
+      },
+      "children": bools
+    })
+  }
+}
