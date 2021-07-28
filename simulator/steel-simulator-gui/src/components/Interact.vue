@@ -1,7 +1,7 @@
 <template>
   <div>
     <ProgressBar :value="countdown" :showValue="false" style="height: .5em; margin-bottom: 1em;" />
-    <DataView :value="agents" :layout="layout" :paginator="true" :rows="12">
+    <DataView :value="agents" :layout="layout" :paginator="true" :rows="9">
       <template #header>
         <DataViewLayoutOptions v-model="layout" />
       </template>
