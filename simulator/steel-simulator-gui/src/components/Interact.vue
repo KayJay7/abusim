@@ -8,8 +8,21 @@
 
       <template #list="slotProps">
         <div class="p-col-12">
-          <div class="agent-list-item">
+          <div class="agent-list-item p-grid p-ai-center vertical-container">
+            <h1 class="p-col agent-list-item-title">
             {{slotProps.data.name}}
+            </h1>
+            <TreeTable :value="slotProps.data.memoryTree" class="p-treetable-sm treetable-very-sm p-col-5">
+                <Column field="name" header="Name" :expander="true"></Column>
+                <Column field="value" header="Value"></Column>
+            </TreeTable>
+            <div class="p-inputgroup p-col-6" style="margin-bottom: .5em;">
+              <span class="p-inputgroup-addon">
+                <i class="pi pi-play"></i>
+              </span>
+              <InputText placeholder="Input" v-model="slotProps.data.input"/>
+              <Button icon="pi pi-send" :disabled="slotProps.data.input == ''" @click="sendInput(slotProps.data.name, slotProps.data.input)"/>
+            </div>
           </div>
         </div>
       </template>
@@ -136,6 +149,11 @@ export default {
 .p-dataview >>> .agent-list-item {
   background: #ffffff;
   padding: 1rem;
+}
+.p-dataview >>> .agent-list-item-title {
+  text-align: center;
+  font-size: 1.5em;
+  margin: 0;
 }
 
 .p-dataview >>> .agent-grid-item {
