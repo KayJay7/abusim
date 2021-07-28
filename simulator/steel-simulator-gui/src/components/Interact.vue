@@ -21,7 +21,7 @@
                 <i class="pi pi-play"></i>
               </span>
               <InputText placeholder="Input" v-model="slotProps.data.input"/>
-              <Button icon="pi pi-send" :disabled="slotProps.data.input == ''" @click="sendInput(slotProps.data.name, slotProps.data.input)"/>
+              <Button icon="pi pi-send" :disabled="slotProps.data.input == '' || ! slotProps.data.input" @click="sendInput(slotProps.data.name, slotProps.data.input)"/>
             </div>
           </div>
         </div>
@@ -36,7 +36,7 @@
                 <i class="pi pi-play"></i>
               </span>
               <InputText placeholder="Input" v-model="slotProps.data.input"/>
-              <Button icon="pi pi-send" :disabled="slotProps.data.input == ''" @click="sendInput(slotProps.data.name, slotProps.data.input)"/>
+              <Button icon="pi pi-send" :disabled="slotProps.data.input == '' || ! slotProps.data.input" @click="sendInput(slotProps.data.name, slotProps.data.input)"/>
             </div>
             <TreeTable :value="slotProps.data.memoryTree" class="p-treetable-sm treetable-very-sm">
                 <Column field="name" header="Name" :expander="true"></Column>
@@ -50,7 +50,7 @@
 </template>
 
 <script>
-import { ref, watch, onMounted } from "vue";
+import { ref, watch, onMounted, onUnmounted } from "vue";
 import { useToast } from 'primevue/usetoast';
 
 import { getAgentMemory, decorateAgentMemory, postAgentInput } from '@/functions/coordinatorService'
@@ -79,11 +79,15 @@ export default {
           }
         }, refreshRate / 10 * 1000);
       } else {
-        if (interval.value) {
-          clearInterval(interval.value)
-        }
-        interval.value = null
+        stopRefreshInterval()
       }
+    }
+
+    const stopRefreshInterval = () => {
+      if (interval.value) {
+        clearInterval(interval.value)
+      }
+      interval.value = null
     }
 
     const loadAgents = () => {
@@ -120,8 +124,14 @@ export default {
       })
     }
 
-    watch(() => props.agentsList, () => {
-      loadAgents()
+    watch(() => props.agentsList, (current) => {
+      console.log(current);
+      if (current != []) {
+        loadAgents()
+        updateRefreshInterval(props.refreshRate)
+      } else {
+        stopRefreshInterval()
+      }
     })
 
     watch(() => props.refreshRate, (current) => {
@@ -131,6 +141,10 @@ export default {
     onMounted(() => {
       loadAgents()
       updateRefreshInterval(props.refreshRate)
+    })
+    
+    onUnmounted(() => {
+      stopRefreshInterval()
     })
     
     return {

@@ -1,5 +1,18 @@
 const api = 'http://localhost:4000'
 
+export function ping() {
+  return fetch(`${api}/`)
+  .then(response => {
+    if (response.status == 418) {
+      return 'pong'
+    }
+    return 'pang'
+  })
+  .catch(() => {
+    return 'pang'
+  })
+}
+
 export function getAgentConfig(agentName) {
   return fetch(`${api}/config/${agentName}`)
   .then(response => response.json().then(data => ({response, json: data})))
