@@ -8,7 +8,9 @@
   },
   "dependencies": {
     "core-js": "^3.6.5",
+    "js-yaml": "^3.14.1",
     "mitt": "^2.1.0",
+    "npm": "^7.20.2",
     "primeicons": "4.0.0",
     "primevue": "3.6.0",
     "vue": "3.0.3",

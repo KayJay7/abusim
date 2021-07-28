@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div id="app-content">
-      <Agents :configsource="configSourceCode"/>
+      <Agents :configsource="configSourceCode" @invalid-config="showInvalidConfig" />
     </div>
     <SpeedDial :model="commands" :radius="140" direction="up-left" type="quarter-circle" :style="{ position: 'fixed', bottom: '25px', right: '25px'}" />
     <Toast/>
@@ -28,9 +28,13 @@ export default {
       const reader = new FileReader()
       reader.onload = (evt) => {
         configSourceCode.value = evt.target.result
-        toast.add({ severity: 'success', summary: 'Config load', detail: 'Config loaded', life: 3000 });
+        toast.add({ severity: 'success', summary: 'Config load', detail: 'Config uploaded', life: 3000 });
       };
       reader.readAsText(evt.target.files[0])
+    }
+
+    const showInvalidConfig = () => {
+      toast.add({ severity: 'error', summary: 'Invalid config', detail: 'The provided configuration is not a valid YAML file or is not semantically valid', life: 3000 });
     }
 
     const commands = ref([
@@ -68,6 +72,7 @@ export default {
     return {
       configSourceCode,
       uploadConfigFile,
+      showInvalidConfig,
       commands
     }
   }

@@ -5,7 +5,7 @@
         <i class="pi pi-sitemap sep-pi"></i>
         <span>Configuration</span>
       </template>
-      <pre v-if="configSourceCode != ''" v-highlightjs="configSourceCode"><code class="yaml"></code></pre>
+      <pre v-if="config != null" v-highlightjs="configSourceCode"><code class="yaml"></code></pre>
       <Message v-else severity="warn" :closable="false">No config loaded, please add one using the button below</Message>
     </TabPanel>
     <TabPanel>
@@ -13,7 +13,7 @@
         <i class="pi pi-compass sep-pi"></i>
         <span>Explore</span>
       </template>
-      <Message v-if="configSourceCode != ''" severity="success" :closable="false">Explore here</Message>
+      <Message v-if="config != null" severity="success" :closable="false">Explore here</Message>
       <Message v-else severity="warn" :closable="false">No config loaded, please add one using the button below</Message>
     </TabPanel>
     <TabPanel>
@@ -21,7 +21,7 @@
         <i class="pi pi-comments sep-pi"></i>
         <span>Interact</span>
       </template>
-      <Message v-if="configSourceCode != ''" severity="success" :closable="false">Interact here</Message>
+      <Message v-if="config != null" severity="success" :closable="false">Interact here</Message>
       <Message v-else severity="warn" :closable="false">No config loaded, please add one using the button below</Message>
     </TabPanel>
   </TabView>
@@ -30,20 +30,39 @@
 <script>
 import { ref, watch } from 'vue';
 
+import { configParse } from '@/functions/configParse'
+
 export default {
   name: 'Agents',
   props: [
     'configsource'
   ],
-  setup(props) {
+  emits: [
+    'invalid-config'
+  ],
+  setup(props, { emit }) {
     const configSourceCode = ref('')
+    const config = ref(null)
 
     watch(() => props.configsource, (current) => {
-      configSourceCode.value = current
+      if (current == '') {
+        config.value = null
+        configSourceCode.value = ''
+        return
+      }
+      var configDoc = configParse(current)
+      console.log(configDoc);
+      if (configDoc != null) {
+        config.value = configDoc
+        configSourceCode.value = current
+      } else {
+        emit('invalid-config')
+      }
     });
 
     return {
-      configSourceCode
+      configSourceCode,
+      config
     }
   }
 }
