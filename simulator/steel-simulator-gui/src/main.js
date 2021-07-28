@@ -8,6 +8,7 @@ import SpeedDial from 'primevue/speeddial';
 import TabView from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
 import Message from 'primevue/message';
+import Tree from 'primevue/tree';
 
 import 'primevue/resources/themes/saga-blue/theme.css';
 import 'primevue/resources/primevue.min.css';
@@ -28,5 +29,6 @@ app.component('Toast', Toast);
 app.component('TabView', TabView);
 app.component('TabPanel', TabPanel);
 app.component('Message', Message);
+app.component('Tree', Tree);
 
 app.mount('#app')
