@@ -51,6 +51,7 @@
 
 <script>
 import { ref, watch, onMounted } from "vue";
+import { useToast } from 'primevue/usetoast';
 
 import { getAgentMemory, decorateAgentMemory, postAgentInput } from '@/functions/coordinatorService'
 
@@ -61,6 +62,8 @@ export default {
     'refreshRate'
   ],
   setup(props) {
+    const toast = useToast()
+
     const agents = ref([])
     const layout = ref('grid')
     const countdown = ref(100)
@@ -101,19 +104,19 @@ export default {
           decorateAgentMemory(agentsValue[index])
         })
         .catch(error => {
-          console.error('There has been a problem with your fetch operation:', error)
+          toast.add({ severity: 'error', summary: 'API Error', detail: `There has been a problem with the API operation: ${error}` })
         })
       })
     }
 
     const sendInput = (agentName, input) => {
       postAgentInput(agentName, input)
-      .then(response => {
+      .then(() => {
         agents.value.filter(a => a.name == agentName)[0].input = ''
-        console.log(response)
+        toast.add({ severity: 'success', summary: 'Input', detail: `Input performed succesfully` })
       })
       .catch(error => {
-        console.error('There has been a problem with your fetch operation:', error)
+        toast.add({ severity: 'error', summary: 'API Error', detail: `There has been a problem with the API operation: ${error}` })
       })
     }
 

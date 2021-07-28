@@ -29,6 +29,7 @@
 
 <script>
 import { ref, watch } from 'vue';
+import { useToast } from 'primevue/usetoast';
 
 import { configParse, getConfigTree, decorateAgentTree } from '@/functions/configParse'
 import { getAgentConfig } from '@/functions/coordinatorService'
@@ -40,13 +41,12 @@ export default {
   props: [
     'configsource'
   ],
-  emits: [
-    'invalid-config'
-  ],
   components: {
     Interact
   },
-  setup(props, { emit }) {
+  setup(props) {
+    const toast = useToast()
+
     const config = ref(null)
     const configSourceCode = ref('')
     const configTree = ref([])
@@ -72,11 +72,11 @@ export default {
           decorateAgentTree(configTree.value, agent)
         })
         .catch(error => {
-          console.error('There has been a problem with your fetch operation:', error);
+          toast.add({ severity: 'error', summary: 'API Error', detail: `There has been a problem with the API operation: ${error}` })
         })
       })
       } else {
-        emit('invalid-config')
+        toast.add({ severity: 'error', summary: 'Invalid config', detail: 'The provided configuration is not a valid YAML file or is not semantically valid' })
       }
     });
 

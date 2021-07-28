@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div id="app-content">
-      <Agents :configsource="configSourceCode" @invalid-config="showInvalidConfig" />
+      <Agents :configsource="configSourceCode" />
     </div>
     <SpeedDial :model="commands" :radius="140" direction="up-left" type="quarter-circle" :style="{ position: 'fixed', bottom: '25px', right: '25px'}" />
     <Toast/>
@@ -20,7 +20,7 @@ export default {
     Agents
   },
   setup() {
-    const toast = useToast();
+    const toast = useToast()
 
     const configSourceCode = ref('')
 
@@ -28,13 +28,9 @@ export default {
       const reader = new FileReader()
       reader.onload = (evt) => {
         configSourceCode.value = evt.target.result
-        toast.add({ severity: 'success', summary: 'Config load', detail: 'Config uploaded', life: 3000 });
+        toast.add({ severity: 'success', summary: 'Config load', detail: 'Config uploaded', life: 3000 })
       };
       reader.readAsText(evt.target.files[0])
-    }
-
-    const showInvalidConfig = () => {
-      toast.add({ severity: 'error', summary: 'Invalid config', detail: 'The provided configuration is not a valid YAML file or is not semantically valid', life: 3000 });
     }
 
     const commands = ref([
@@ -49,7 +45,7 @@ export default {
             label: 'Refresh',
             icon: 'pi pi-refresh',
             command: () => {
-                toast.add({ severity: 'info', summary: 'Refresh', detail: 'Data refreshed', life: 3000 });
+                toast.add({ severity: 'info', summary: 'Refresh', detail: 'Data refreshed', life: 3000 })
             }
         },
         {
@@ -57,14 +53,14 @@ export default {
             icon: 'pi pi-trash',
             command: () => {
                 configSourceCode.value = ''
-                toast.add({ severity: 'error', summary: 'Config reset', detail: 'Config removed', life: 3000 });
+                toast.add({ severity: 'error', summary: 'Config reset', detail: 'Config removed', life: 3000 })
             }
         },
         {
             label: 'Settings',
             icon: 'pi pi-cog',
             command: () => {
-                toast.add({ severity: 'info', summary: 'Settings', detail: 'Opened settings', life: 3000 });
+                toast.add({ severity: 'info', summary: 'Settings', detail: 'Opened settings', life: 3000 })
             }
         }
     ]);
@@ -72,7 +68,6 @@ export default {
     return {
       configSourceCode,
       uploadConfigFile,
-      showInvalidConfig,
       commands
     }
   }

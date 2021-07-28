@@ -2,21 +2,23 @@ const api = 'http://localhost:4000'
 
 export function getAgentConfig(agentName) {
   return fetch(`${api}/config/${agentName}`)
-  .then(response => {
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
+  .then(response => response.json().then(data => ({response, json: data})))
+  .then(result => {
+    if (! result.response.ok) {
+      return Promise.reject(`${result.response.status} ${result.response.statusText}: ${result.json.error}`)
     }
-    return response.json();
+    return Promise.resolve(result.json)
   })
 }
 
 export function getAgentMemory(agentName) {
   return fetch(`${api}/memory/${agentName}`)
-  .then(response => {
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
+  .then(response => response.json().then(data => ({response, json: data})))
+  .then(result => {
+    if (! result.response.ok) {
+      return Promise.reject(`${result.response.status} ${result.response.statusText}: ${result.json.error}`)
     }
-    return response.json();
+    return Promise.resolve(result.json)
   })
 }
 
@@ -57,10 +59,11 @@ export function postAgentInput(agentName, input) {
       actions: input
     })
   })
-  .then(response => {
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
+  .then(response => response.json().then(data => ({response, json: data})))
+  .then(result => {
+    if (! result.response.ok) {
+      return Promise.reject(`${result.response.status} ${result.response.statusText}: ${result.json.error}`)
     }
-    return response.json();
+    return Promise.resolve(result.json)
   })
 }
