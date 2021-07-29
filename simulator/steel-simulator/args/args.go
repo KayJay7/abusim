@@ -13,6 +13,7 @@ const (
 	SUBCOMMAND_LOGS SubCommand = iota
 )
 
+// ArgsConfig represents the configuration given through the command line
 type ArgsConfig struct {
 	ConfigFile string
 	SubCommand SubCommand
@@ -20,25 +21,28 @@ type ArgsConfig struct {
 	FollowLogs bool
 }
 
+// ParseArgs parses the command line and returns the configuration
 func ParseArgs() *ArgsConfig {
+	// I create an empty configuration...
 	config := ArgsConfig{}
-
+	// ... I set up the global flags...
 	flag.StringVar(&config.ConfigFile, "c", "steel-simulator.yml", "configuration file")
-
+	// ... I set up the "up" subcommand with its flags...
 	upCmd := flag.NewFlagSet("up", flag.ExitOnError)
 	upCmd.BoolVar(&config.Detached, "d", false, "detached")
-
+	// ... I set up the "down" subcommand...
 	downCmd := flag.NewFlagSet("down", flag.ExitOnError)
-
+	// ... and I set up the "logs" subcommand with its flags
 	logsCmd := flag.NewFlagSet("logs", flag.ExitOnError)
 	logsCmd.BoolVar(&config.FollowLogs, "f", false, "follow")
-
+	// I parse the command line for the global flags...
 	flag.Parse()
-
+	// ... I search for a subcommand...
 	args := flag.Args()
 	if len(args) == 0 {
 		log.Fatalln("A command is needed: up, down, logs")
 	}
+	// ... and I parse the corresponding flags
 	switch args[0] {
 	case "up":
 		upCmd.Parse(args[1:])
@@ -52,6 +56,6 @@ func ParseArgs() *ArgsConfig {
 	default:
 		log.Fatalf("unknown subcommand \"%s\", see help for more details", args[0])
 	}
-
+	// Finally, I return the configuration
 	return &config
 }
