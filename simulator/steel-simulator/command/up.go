@@ -5,8 +5,8 @@ import (
 	"log"
 	"os"
 	"os/signal"
-	"steel-simulator-common/config"
 	"steel-simulator/args"
+	"steel-simulator/config"
 	"steel-simulator/docker"
 	"syscall"
 )
@@ -25,7 +25,7 @@ func Up(args *args.ArgsConfig, conf *config.Config, dcli *docker.DockerClient) {
 	endpoints := []string{}
 
 	for name, agent := range conf.Agents {
-		agent.SetEndpoints(endpoints)
+		agent.Endpoints = endpoints
 		containerName := fmt.Sprintf("%s-%s", conf.Namespace, name)
 		agentSerialization, err := agent.Serialize()
 		if err != nil {

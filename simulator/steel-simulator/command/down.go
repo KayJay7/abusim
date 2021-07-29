@@ -3,7 +3,7 @@ package command
 import (
 	"fmt"
 	"log"
-	"steel-simulator-common/config"
+	"steel-simulator/config"
 	"steel-simulator/docker"
 )
 
