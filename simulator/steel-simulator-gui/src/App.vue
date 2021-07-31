@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div id="app-content">
-      <Agents :config-source="configSourceCode" :refresh="refreshClick" :refresh-rate="refreshRate"/>
+      <Agents :config-source="configSourceCode" :refresh="refreshClick" :agents-settings="agentsSettings"/>
     </div>
     <SpeedDial :model="commands" :radius="140" direction="up-left" type="quarter-circle" :disabled="!online" :style="{ position: 'fixed', bottom: '25px', right: '25px'}" />
     <Settings :visible="settingsVisible" @update="updateSettings" @close="closeSettings"/>
@@ -30,7 +30,11 @@ export default {
     const configSourceCode = ref('')
     const online = ref(false)
     const refreshClick = ref(false)
-    const refreshRate = ref(30)
+    const agentsSettings = ref({
+      autoRefresh: true,
+      autoRefreshInterval: 30,
+      refreshOnInput: true,
+    })
     const settingsVisible = ref(false)
 
     const checkOnline = () => {
@@ -54,7 +58,11 @@ export default {
     }
 
     const updateSettings = (settings) => {
-      refreshRate.value = settings.autoRefresh ? settings.autoRefreshInterval : null
+      agentsSettings.value = {
+        autoRefresh: settings.autoRefresh,
+        autoRefreshInterval: settings.autoRefresh ? settings.autoRefreshInterval : null,
+        refreshOnInput: settings.refreshOnInput,
+      }
     }
 
     const closeSettings = () => {
@@ -107,7 +115,7 @@ export default {
       commands,
       online,
       refreshClick,
-      refreshRate,
+      agentsSettings,
       settingsVisible,
       updateSettings,
       closeSettings

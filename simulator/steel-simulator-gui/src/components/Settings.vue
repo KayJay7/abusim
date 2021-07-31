@@ -4,13 +4,19 @@
       <div class="p-field p-grid">
         <label for="settings-autorefresh" class="p-col-12 p-mb-3 p-md-3 p-mb-md-0">AutoRefresh</label>
         <div class="p-col-12 p-md-9">
-          <SelectButton id="settings-autorefresh" v-model="autoRefresh" :options="autoRefreshOptions" />
+          <SelectButton id="settings-autorefresh" v-model="autoRefresh" :options="onOffOptions" />
         </div>
       </div>
       <div class="p-field p-grid">
         <label for="settings-autorefresh-interval" class="p-col-12 p-mb-3 p-md-3 p-mb-md-0">AutoRefresh Interval</label>
         <div class="p-col-12 p-md-9">
           <InputNumber id="settings-autorefresh-interval" v-model="autoRefreshInterval" suffix=" seconds" />
+        </div>
+      </div>
+      <div class="p-field p-grid">
+        <label for="settings-autorefresh-oninput" class="p-col-12 p-mb-3 p-md-3 p-mb-md-0">Refresh on input</label>
+        <div class="p-col-12 p-md-9">
+          <SelectButton id="settings-autorefresh" v-model="refreshOnInput" :options="onOffOptions" />
         </div>
       </div>
     </div>
@@ -36,7 +42,8 @@ export default {
   setup(props, { emit }) {
     const dialogVisible = ref(false)
     const autoRefresh = ref('On')
-    const autoRefreshOptions = ref(['On', 'Off'])
+    const refreshOnInput = ref('On')
+    const onOffOptions = ref(['On', 'Off'])
     const autoRefreshInterval = ref(30)
 
     const close = () => {
@@ -47,7 +54,8 @@ export default {
     const save = () => {
       emit('update', {
         autoRefresh: autoRefresh.value == 'On',
-        autoRefreshInterval: autoRefreshInterval.value
+        autoRefreshInterval: autoRefreshInterval.value,
+        refreshOnInput: refreshOnInput.value == 'On',
       })
       close()
     }
@@ -59,7 +67,8 @@ export default {
     return {
       dialogVisible,
       autoRefresh,
-      autoRefreshOptions,
+      refreshOnInput,
+      onOffOptions,
       autoRefreshInterval,
       close,
       save

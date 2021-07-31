@@ -1,6 +1,6 @@
 <template>
   <div>
-    <ProgressBar v-if="refreshRate != null" :value="countdown" :showValue="false" style="height: .5em; margin-bottom: 1em;" />
+    <ProgressBar v-if="agentsSettings.autoRefreshInterval != null" :value="countdown" :showValue="false" style="height: .5em; margin-bottom: 1em;" />
     <DataView :value="agents" :layout="layout" :paginator="true" :rows="6">
       <template #header>
         <DataViewLayoutOptions v-model="layout" />
@@ -20,7 +20,7 @@
               <span class="p-inputgroup-addon">
                 <i class="pi pi-play"></i>
               </span>
-              <InputText placeholder="Input" v-model="slotProps.data.input"/>
+              <InputText placeholder="Input" v-model="slotProps.data.input" />
               <Button icon="pi pi-send" :disabled="slotProps.data.input == '' || ! slotProps.data.input" @click="sendInput(slotProps.data.name, slotProps.data.input)"/>
             </div>
           </div>
@@ -59,7 +59,7 @@ export default {
   name: 'Interact',
   props: [
     'agentsList',
-    'refreshRate',
+    'agentsSettings',
     'refresh'
   ],
   setup(props) {
@@ -70,16 +70,16 @@ export default {
     const countdown = ref(100)
     const interval = ref(null)
 
-    const updateRefreshInterval = (refreshRate) => {
+    const updateRefreshInterval = (agentsSettings) => {
       stopRefreshInterval()
-      if (refreshRate != null) {
+      if (agentsSettings.autoRefreshInterval != null) {
         interval.value = setInterval(() => {
           countdown.value -= 10
           if (countdown.value < 0) {
             refreshAgents()
             countdown.value = 100
           }
-        }, refreshRate / 10 * 1000);
+        }, agentsSettings.autoRefreshInterval / 10 * 1000);
       }
     }
 
@@ -115,7 +115,12 @@ export default {
       postAgentInput(agentName, input)
       .then(() => {
         agents.value.filter(a => a.name == agentName)[0].input = ''
-        toast.add({ severity: 'success', summary: 'Input', detail: `Input performed succesfully`, life: 3000 })
+        if (props.agentsSettings.refreshOnInput) {
+          toast.add({ severity: 'success', summary: 'Input', detail: `Input performed succesfully, now updating data`, life: 3000 })
+          setTimeout(refreshAgents, 100)
+        } else {
+          toast.add({ severity: 'success', summary: 'Input', detail: `Input performed succesfully`, life: 3000 })
+        }
       })
       .catch(error => {
         toast.add({ severity: 'error', summary: 'API Error', detail: `There has been a problem with the API operation: ${error}` })
@@ -126,13 +131,13 @@ export default {
       console.log(current);
       if (current != []) {
         loadAgents()
-        updateRefreshInterval(props.refreshRate)
+        updateRefreshInterval(props.agentsSettings)
       } else {
         stopRefreshInterval()
       }
     })
 
-    watch(() => props.refreshRate, (current) => {
+    watch(() => props.agentsSettings, (current) => {
       updateRefreshInterval(current)
     })
 
@@ -143,7 +148,7 @@ export default {
 
     onMounted(() => {
       loadAgents()
-      updateRefreshInterval(props.refreshRate)
+      updateRefreshInterval(props.agentsSettings)
     })
     
     onUnmounted(() => {
