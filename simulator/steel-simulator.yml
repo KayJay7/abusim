@@ -2,19 +2,108 @@ version: "1.0"
 image: "steel-agent"
 namespace: "steel-simulator-example"
 agents:
-  ag1:
-    prototype: example
-    tick: 500ms
-  ag2:
-    prototype: example
+  temp_S1:
+    prototype: tempsensor
     memory:
-      - bool:button:false
+      - text:room:S1
+  knob_S1:
+    prototype: tempknob
+    memory:
+      - text:room:S1
+  conv_S1:
+    prototype: convector
+    memory:
+      - text:room:S1
+  smke_S1:
+    prototype: smokesensor
+    memory:
+      - text:room:S1
+  fire_S1:
+    prototype: firesensor
+    memory:
+      - text:room:S1
+  alrm_S1:
+    prototype: alarm
+    memory:
+      - text:room:S1
+  temp_S2:
+    prototype: tempsensor
+    memory:
+      - text:room:S2
+  knob_S2:
+    prototype: tempknob
+    memory:
+      - text:room:S2
+  conv_S2:
+    prototype: convector
+    memory:
+      - text:room:S2
+  smke_S2:
+    prototype: smokesensor
+    memory:
+      - text:room:S2
+  fire_S2:
+    prototype: firesensor
+    memory:
+      - text:room:S2
+  alrm_S2:
+    prototype: alarm
+    memory:
+      - text:room:S2
 prototypes:
-  example:
+  tempsensor:
     memorycontroller: basic
     tick: 1s
     memory:
-      - bool:button
-      - bool:involved:false
+      - integer:temperature:20
     rules:
-      - rule r1 on button; default involved = false; for all ext.involved == false do involved = true;
+      - rule notify_convectors on temperature; for all ext.is_convector && ext.room == this.room do current = this.temperature;
+      - rule notify_firesensors on temperature; for all ext.is_firesensor && ext.room == this.room do temperature = this.temperature;
+  tempknob:
+    memorycontroller: basic
+    tick: 1s
+    memory:
+      - integer:set:20
+    rules:
+      - rule notify_convectors on set; for all ext.is_convector && ext.room == this.room do target = this.set;
+  convector:
+    memorycontroller: basic
+    tick: 1s
+    memory:
+      - bool:is_convector:true
+      - integer:current:20
+      - integer:target:20
+      - text:action:nothing
+    rules:
+      - rule increase_temp_curr on current; default action = "nothing"; for this.current < this.target do action = "increase";
+      - rule decrease_temp_curr on current; default action = "nothing"; for this.current > this.target do action = "decrease";
+      - rule increase_temp_targ on target; default action = "nothing"; for this.current < this.target do action = "increase";
+      - rule decrease_temp_targ on target; default action = "nothing"; for this.current > this.target do action = "decrease";
+  smokesensor:
+    memorycontroller: basic
+    tick: 1s
+    memory:
+      - bool:smoke:false
+    rules:
+      - rule notify_firesensors on smoke; for all ext.is_firesensor && ext.room == this.room do smoke = this.smoke;
+  firesensor:
+    memorycontroller: basic
+    tick: 1s
+    memory:
+      - bool:is_firesensor:true
+      - bool:smoke:false
+      - bool:fire:false
+      - integer:temperature:20
+    rules:
+      - rule alarm_smoke on smoke; default fire = false; for this.temperature > 50 || this.smoke do fire = true;
+      - rule alarm_temp on temp; default fire = false; for this.temperature > 50 || this.smoke do fire = true;
+      - rule sound_alarms on fire; for all ext.is_alarm && this.fire do sound = true;
+  alarm:
+    memorycontroller: basic
+    tick: 1s
+    memory:
+      - bool:is_alarm:true
+      - bool:reset:false
+      - bool:sound:false
+    rules:
+      - rule reset_button on reset; for this.reset do sound = false; reset = false;
