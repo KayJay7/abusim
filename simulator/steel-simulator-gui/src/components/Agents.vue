@@ -5,7 +5,11 @@
         <i class="pi pi-sitemap sep-pi"></i>
         <span>Configuration</span>
       </template>
-      <pre v-if="config != null" v-highlightjs="configSourceCode"><code class="yaml"></code></pre>
+      <TabView v-if="config" >
+        <TabPanel v-for="code in configSources" :key="code.filename" :header="code.filename">
+          <pre v-highlightjs="code.content"><code class="yaml"></code></pre>
+        </TabPanel>
+      </TabView>
       <Message v-else severity="warn" :closable="false">No config loaded, please add one using the button below</Message>
     </TabPanel>
     <TabPanel>
@@ -13,7 +17,7 @@
         <i class="pi pi-compass sep-pi"></i>
         <span>Explore</span>
       </template>
-      <Tree v-if="config != null" :value="configTree"></Tree>
+      <Tree v-if="config" :value="configTree"></Tree>
       <Message v-else severity="warn" :closable="false">No config loaded, please add one using the button below</Message>
     </TabPanel>
     <TabPanel>
@@ -21,7 +25,7 @@
         <i class="pi pi-comments sep-pi"></i>
         <span>Interact</span>
       </template>
-      <Interact v-if="config != null" :agents-list="agentsList" :refresh="refresh" :agents-settings="agentsSettings"/>
+      <Interact v-if="config" :agents-list="agentsList" :refresh="refresh" :agents-settings="agentsSettings"/>
       <Message v-else severity="warn" :closable="false">No config loaded, please add one using the button below</Message>
     </TabPanel>
   </TabView>
@@ -39,7 +43,7 @@ import Interact from '@/components/Interact.vue'
 export default {
   name: 'Agents',
   props: [
-    'configSource',
+    'configSources',
     'refresh',
     'agentsSettings'
   ],
@@ -49,42 +53,57 @@ export default {
   setup(props) {
     const toast = useToast()
 
-    const config = ref(null)
-    const configSourceCode = ref('')
+    const config = ref(false)
     const configTree = ref([])
     const agentsList = ref([])
 
-    watch(() => props.configSource, (current) => {
-      if (current == '') {
-        config.value = null
-        configSourceCode.value = ''
+    watch(() => props.configSources, (current) => {
+      if (current == []) {
+        config.value = false
         agentsList.value = []
         configTree.value = {}
         return
       }
-      var configDoc = configParse(current)
-      if (configDoc != null) {
-        config.value = configDoc
-        configSourceCode.value = current
-        agentsList.value = Object.keys(configDoc['agents'])
-        configTree.value = getConfigTree(configDoc)
-        configTree.value[0].children.forEach((agentTree) => {
-        getAgentConfig(agentTree.label)
-        .then(agent => {
-          decorateAgentTree(configTree.value, agent)
-        })
-        .catch(error => {
-          toast.add({ severity: 'error', summary: 'API Error', detail: `There has been a problem with the API operation: ${error}` })
-        })
+      let configs = [], agentsLists = [], configTrees = []
+      current.forEach(configFile => {
+        var configDoc = configParse(configFile.content)
+        if (configDoc != null) {
+          configs.push(configDoc)
+          agentsLists.push(Object.keys(configDoc['agents']))
+          let configDocTree = getConfigTree(configDoc)
+          configDocTree[0].children.forEach((agentTree) => {
+            getAgentConfig(agentTree.label)
+            .then(agent => {
+              decorateAgentTree(configDocTree, agent)
+            })
+            .catch(error => {
+              toast.add({ severity: 'error', summary: 'API Error', detail: `There has been a problem with the API operation: ${error}` })
+            })
+          })
+          configTrees.push(configDocTree)
+        } else {
+          toast.add({ severity: 'error', summary: 'Invalid config', detail: 'The provided configuration is not a valid YAML file or is not semantically valid' })
+        }
       })
-      } else {
-        toast.add({ severity: 'error', summary: 'Invalid config', detail: 'The provided configuration is not a valid YAML file or is not semantically valid' })
-      }
-    });
+      agentsList.value = agentsLists.flat().sort()
+      configTree.value = [{
+        key: "agents",
+        label: "Agents",
+        data: "Agents data",
+        icon: "pi pi-users",
+        children: configTrees.map(el => el[0].children).flat().sort((a, b) => a.label > b.label)
+      },{
+        key: "prototypes",
+        label: "Prototypes",
+        data: "Prototypes data",
+        icon: "pi pi-tags",
+        children: configTrees.map(el => el[1].children).flat().sort((a, b) => a.label > b.label)
+      }]
+      config.value = true
+    })
 
     return {
       config,
-      configSourceCode,
       configTree,
       agentsList
     }

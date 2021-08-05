@@ -1,12 +1,12 @@
 <template>
   <div id="app">
     <div id="app-content">
-      <Agents :config-source="configSourceCode" :refresh="refreshClick" :agents-settings="agentsSettings"/>
+      <Agents :config-sources="configSources" :refresh="refreshClick" :agents-settings="agentsSettings"/>
     </div>
     <SpeedDial :model="commands" :radius="140" direction="up-left" type="quarter-circle" :disabled="!online" :style="{ position: 'fixed', bottom: '25px', right: '25px'}" />
     <Settings :visible="settingsVisible" @update="updateSettings" @close="closeSettings"/>
     <Toast/>
-    <input id="config-file-input" type="file" style="display: none;" @change="uploadConfigFile" />
+    <input id="config-file-input" type="file" multiple style="display: none;" @change="uploadConfigFiles" />
   </div>
 </template>
 
@@ -27,7 +27,7 @@ export default {
   setup() {
     const toast = useToast()
 
-    const configSourceCode = ref('')
+    const configSources = ref([])
     const online = ref(false)
     const refreshClick = ref(false)
     const agentsSettings = ref({
@@ -48,13 +48,24 @@ export default {
       })
     }
 
-    const uploadConfigFile = (evt) => {
-      const reader = new FileReader()
-      reader.onload = (evt) => {
-        configSourceCode.value = evt.target.result
+    const uploadConfigFiles = (evt) => {
+      let promises = []
+      evt.target.files.forEach(file => {
+        promises.push(new Promise(resolve => {
+          const reader = new FileReader()
+          reader.onload = (evt) => {
+            resolve({
+              filename: file.name,
+              content: evt.target.result,
+            })
+          }
+          reader.readAsText(file)
+        }))
+      })
+      Promise.all(promises).then(values => {
+        configSources.value = values
         toast.add({ severity: 'success', summary: 'Config load', detail: 'Config uploaded', life: 3000 })
-      };
-      reader.readAsText(evt.target.files[0])
+      })
     }
 
     const updateSettings = (settings) => {
@@ -89,7 +100,7 @@ export default {
         label: 'Config reset',
         icon: 'pi pi-trash',
         command: () => {
-          configSourceCode.value = ''
+          configSources.value = []
           toast.add({ severity: 'error', summary: 'Config reset', detail: 'Config removed', life: 3000 })
         }
       },
@@ -110,8 +121,8 @@ export default {
     })
 
     return {
-      configSourceCode,
-      uploadConfigFile,
+      configSources,
+      uploadConfigFiles,
       commands,
       online,
       refreshClick,

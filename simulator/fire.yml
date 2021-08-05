@@ -1,0 +1,55 @@
+version: "1.0"
+agents:
+  smke_S1:
+    prototype: smokesensor
+    memory:
+      - text:room:S1
+  fire_S1:
+    prototype: firesensor
+    memory:
+      - text:room:S1
+  alrm_S1:
+    prototype: alarm
+    memory:
+      - text:room:S1
+  smke_S2:
+    prototype: smokesensor
+    memory:
+      - text:room:S2
+  fire_S2:
+    prototype: firesensor
+    memory:
+      - text:room:S2
+  alrm_S2:
+    prototype: alarm
+    memory:
+      - text:room:S2
+prototypes:
+  smokesensor:
+    memorycontroller: basic
+    tick: 1s
+    memory:
+      - bool:smoke:false
+    rules:
+      - rule notify_firesensors on smoke; for all ext.is_firesensor && ext.room == this.room do smoke = this.smoke;
+  firesensor:
+    memorycontroller: basic
+    tick: 1s
+    memory:
+      - bool:is_firesensor:true
+      - bool:smoke:false
+      - bool:fire:false
+      - integer:temperature:20
+    rules:
+      - rule alarm_smoke on smoke; default fire = false; for this.temperature > 50 || this.smoke do fire = true;
+      - rule alarm_temp on temp; default fire = false; for this.temperature > 50 || this.smoke do fire = true;
+      - rule sound_alarms on fire; for all ext.is_alarm && this.fire do sound = true;
+  alarm:
+    memorycontroller: basic
+    tick: 1s
+    memory:
+      - bool:is_alarm:true
+      - bool:reset:false
+      - bool:sound:false
+    rules:
+      - rule reset_button on reset; for this.reset do sound = false; reset = false;

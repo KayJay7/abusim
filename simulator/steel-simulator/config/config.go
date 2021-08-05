@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"path"
 	"steel-simulator-common/config"
 
 	"gopkg.in/yaml.v2"
@@ -11,18 +12,21 @@ import (
 
 // Config represents a configuration
 type Config struct {
-	Image     string
-	Namespace string
-	Agents    map[string]config.Agent
+	Image            string
+	CoordinatorImage string
+	Namespace        string
+	Agents           map[string]config.Agent
 }
 
 // rawConfig represents a YAML configuration file
 type rawConfig struct {
-	Version    string                  `yaml:"version"`
-	Image      string                  `yaml:"image"`
-	Namespace  string                  `yaml:"namespace"`
-	Agents     map[string]rawAgent     `yaml:"agents"`
-	Prototypes map[string]rawPrototype `yaml:"prototypes"`
+	Version          string                  `yaml:"version"`
+	Image            string                  `yaml:"image"`
+	CoordinatorImage string                  `yaml:"coordinatorimage"`
+	Namespace        string                  `yaml:"namespace"`
+	Includes         []string                `yaml:"includes"`
+	Agents           map[string]rawAgent     `yaml:"agents"`
+	Prototypes       map[string]rawPrototype `yaml:"prototypes"`
 }
 
 type rawAgent struct {
@@ -44,17 +48,18 @@ func Parse(filename string) (*Config, error) {
 	// ... and I parse it accordingly to its version
 	switch rawConfig.Version {
 	case "1.0":
-		return parseVersion1dot0(rawConfig)
+		return parseVersion1dot0(rawConfig, path.Dir(filename))
 	default:
 		return nil, fmt.Errorf("unknown config file version \"%s\"", rawConfig.Version)
 	}
 }
 
 // parseVersion1dot0 returns a valid configuration from a raw one
-func parseVersion1dot0(rawConfig rawConfig) (*Config, error) {
-	// I create the configuration and I save the image name and the namespace...
+func parseVersion1dot0(rawConfig rawConfig, base string) (*Config, error) {
+	// I create the configuration and I save the agent and coordinator image name and the namespace...
 	conf := Config{}
 	conf.Image = rawConfig.Image
+	conf.CoordinatorImage = rawConfig.CoordinatorImage
 	conf.Namespace = rawConfig.Namespace
 	// ... and I create a map for the agents
 	conf.Agents = make(map[string]config.Agent)
@@ -103,6 +108,21 @@ func parseVersion1dot0(rawConfig rawConfig) (*Config, error) {
 		configAgent.Rules = append(configAgent.Rules, agent.Rules...)
 		// Finally, I add the agent to the agents list
 		conf.Agents[name] = *configAgent
+	}
+	for _, include := range rawConfig.Includes {
+		filenameInclude := path.Join(base, include)
+		rawConfigInclude := parseRawConfig(filenameInclude)
+		confInclude, err := parseVersion1dot0(rawConfigInclude, path.Dir(filenameInclude))
+		if err != nil {
+			return nil, err
+		}
+		for k, v := range confInclude.Agents {
+			if _, ok := conf.Agents[k]; !ok {
+				conf.Agents[k] = v
+			} else {
+				return nil, fmt.Errorf("duplicate agent \"%s\"", k)
+			}
+		}
 	}
 	return &conf, nil
 }

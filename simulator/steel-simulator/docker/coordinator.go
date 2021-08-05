@@ -13,7 +13,7 @@ import (
 )
 
 // CreateAndRunCoordinatorContainer creates and runs a container for the coordinator
-func (d DockerClient) CreateAndRunCoordinatorContainer(namespace string) error {
+func (d DockerClient) CreateAndRunCoordinatorContainer(namespace, image string) error {
 	// I prepare the container name...
 	containerName := fmt.Sprintf("%s-coordinator", namespace)
 	// ... I prepare the host configuration to open a port...
@@ -43,7 +43,7 @@ func (d DockerClient) CreateAndRunCoordinatorContainer(namespace string) error {
 	}
 	//  ... I prepare the container configuration, passing the image, name and ports...
 	config := &container.Config{
-		Image:        "steel-coordinator",
+		Image:        image,
 		Hostname:     containerName,
 		ExposedPorts: exposedPorts,
 	}
@@ -64,7 +64,7 @@ func (d DockerClient) CreateAndRunCoordinatorContainer(namespace string) error {
 			log.Printf("Found container \"%s\", recreating", containerName)
 			d.RemoveContainer(containerName)
 			// ... and I restart the creation
-			return d.CreateAndRunCoordinatorContainer(namespace)
+			return d.CreateAndRunCoordinatorContainer(namespace, image)
 		}
 		return err
 	}

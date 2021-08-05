@@ -19,7 +19,7 @@ func Up(args *args.ArgsConfig, conf *config.Config, dcli *docker.DockerClient) {
 		log.Fatalln(err)
 	}
 	// ... and I run the coordinator container
-	if err := dcli.CreateAndRunCoordinatorContainer(conf.Namespace); err != nil {
+	if err := dcli.CreateAndRunCoordinatorContainer(conf.Namespace, conf.CoordinatorImage); err != nil {
 		log.Fatalln(err)
 	}
 	// I create a list of the already created agents...
