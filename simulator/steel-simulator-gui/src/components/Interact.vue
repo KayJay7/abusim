@@ -12,11 +12,28 @@
             <h1 class="p-col agent-list-item-title">
             {{slotProps.data.name}}
             </h1>
-            <TreeTable :value="slotProps.data.memoryTree" class="p-treetable-sm treetable-very-sm p-col-5">
-                <Column field="name" header="Name" :expander="true"></Column>
-                <Column field="value" header="Value"></Column>
+            <TreeTable :value="slotProps.data.memoryTree" class="p-treetable-sm treetable-very-sm p-col-4">
+              <template #header>
+                Memory
+              </template>
+              <template #empty>
+                <span class="empty-text">Nothing in memory</span>
+              </template>
+              <Column field="name" header="Name" :expander="true"></Column>
+              <Column field="value" header="Value"></Column>
             </TreeTable>
-            <div class="p-inputgroup p-col-6" style="margin-bottom: .5em;">
+            <TreeTable :value="slotProps.data.poolTree" class="p-treetable-sm treetable-very-sm p-col-4">
+              <template #header>
+                Pool
+              </template>
+              <template #empty>
+                <span class="empty-text">Nothing in pool</span>
+              </template>
+              <Column field="index" header="Index" :expander="true"></Column>
+              <Column field="resource" header="Resource"></Column>
+              <Column field="value" header="Value"></Column>
+            </TreeTable>
+            <div class="p-inputgroup p-col-3" style="margin-bottom: .5em;">
               <span class="p-inputgroup-addon">
                 <i class="pi pi-play"></i>
               </span>
@@ -38,9 +55,26 @@
               <InputText placeholder="Input" v-model="slotProps.data.input"/>
               <Button icon="pi pi-send" :disabled="slotProps.data.input == '' || ! slotProps.data.input" @click="sendInput(slotProps.data.name, slotProps.data.input)"/>
             </div>
-            <TreeTable :value="slotProps.data.memoryTree" class="p-treetable-sm treetable-very-sm">
-                <Column field="name" header="Name" :expander="true"></Column>
-                <Column field="value" header="Value"></Column>
+            <TreeTable :value="slotProps.data.memoryTree" class="p-treetable-sm treetable-very-sm" style="margin-bottom: 0.5em">
+              <template #header>
+                Memory
+              </template>
+              <template #empty>
+                <span class="empty-text">Nothing in memory</span>
+              </template>
+              <Column field="name" header="Name" :expander="true"></Column>
+              <Column field="value" header="Value"></Column>
+            </TreeTable>
+            <TreeTable :value="slotProps.data.poolTree" class="p-treetable-sm treetable-very-sm">
+              <template #header>
+                Pool
+              </template>
+              <template #empty>
+                <span class="empty-text">Nothing in pool</span>
+              </template>
+              <Column field="index" header="Index" :expander="true"></Column>
+              <Column field="resource" header="Resource"></Column>
+              <Column field="value" header="Value"></Column>
             </TreeTable>
           </div>
         </div>
@@ -53,7 +87,7 @@
 import { ref, watch, onMounted, onUnmounted } from "vue";
 import { useToast } from 'primevue/usetoast';
 
-import { getAgentMemory, decorateAgentMemory, postAgentInput } from '@/functions/coordinatorService'
+import { getAgentMemory, decorateAgentMemory, decorateAgentPool, postAgentInput } from '@/functions/coordinatorService'
 
 export default {
   name: 'Interact',
@@ -104,6 +138,8 @@ export default {
         .then(agent => {
           agentsValue[index].memory = agent.memory
           decorateAgentMemory(agentsValue[index])
+          agentsValue[index].pool = agent.pool
+          decorateAgentPool(agentsValue[index])
         })
         .catch(error => {
           toast.add({ severity: 'error', summary: 'API Error', detail: `There has been a problem with the API operation: ${error}` })
@@ -200,5 +236,11 @@ export default {
 
 ::v-deep(.treetable-very-sm tr td) {
   padding: 0 0.5rem !important;
+}
+
+::v-deep(.empty-text) {
+  margin: 0.5em;
+  display: block;
+  text-align: center;
 }
 </style>

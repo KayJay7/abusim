@@ -142,6 +142,35 @@ export function decorateAgentMemory(agentObj) {
   }
 }
 
+export function decorateAgentPool(agentObj) {
+  agentObj.poolTree = []
+  if (! agentObj.pool) {
+    return
+  }
+  agentObj.pool.forEach((action, i) => {
+    var resources = []
+    action.forEach((res, j) => {
+      resources.push({
+        key: `${agentObj.name}-pool-${i}-${j}`,
+        data: {
+          index: `${i}`,
+          resource: res.resource,
+          value: res.value,
+        },
+      })
+    })
+    agentObj.poolTree.push({
+      key: `${agentObj.name}-pool-${i}`,
+      data: {
+        index: `${i}`,
+        resource: "",
+        value: "",
+      },
+      "children": resources
+    })
+  })
+}
+
 export function postAgentInput(agentName, input) {
   return fetch(`${api}/memory/${agentName}`, {
     method: 'POST',
