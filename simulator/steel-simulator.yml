@@ -75,10 +75,12 @@ prototypes:
       - integer:target:20
       - text:action:nothing
     rules:
-      - rule increase_temp_curr on current; default action = "nothing"; for this.current < this.target do action = "increase";
-      - rule decrease_temp_curr on current; default action = "nothing"; for this.current > this.target do action = "decrease";
-      - rule increase_temp_targ on target; default action = "nothing"; for this.current < this.target do action = "increase";
-      - rule decrease_temp_targ on target; default action = "nothing"; for this.current > this.target do action = "decrease";
+      - rule increase_temp_curr on current; for this.current < this.target do action = "increase";
+      - rule decrease_temp_curr on current; for this.current > this.target do action = "decrease";
+      - rule nothing_temp_curr on current; for this.current == this.target do action = "nothing";
+      - rule increase_temp_targ on target; for this.current < this.target do action = "increase";
+      - rule decrease_temp_targ on target; for this.current > this.target do action = "decrease";
+      - rule nothing_temp_targ on target; for this.current == this.target do action = "nothing";
   smokesensor:
     memorycontroller: basic
     tick: 1s
