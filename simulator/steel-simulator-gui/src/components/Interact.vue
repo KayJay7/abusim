@@ -49,11 +49,11 @@
           <div class="agent-grid-item p-shadow-6">
             <h1 class="agent-grid-item-title">{{slotProps.data.name}}</h1>
             <div class="p-inputgroup" style="margin-bottom: .5em;">
-              <span class="p-inputgroup-addon">
-                <i class="pi pi-play"></i>
-              </span>
+              <Button :icon="slotProps.data.paused ? 'pi pi-play' : 'pi pi-pause'" @click="togglePause(slotProps.data.name)"/>
+              <Button icon="pi pi-step-forward" :disabled="! slotProps.data.paused" @click="stepForward(slotProps.data.name)"/>
               <InputText placeholder="Input" v-model="slotProps.data.input"/>
               <Button icon="pi pi-send" :disabled="slotProps.data.input == '' || ! slotProps.data.input" @click="sendInput(slotProps.data.name, slotProps.data.input)"/>
+              <Dropdown v-model="slotProps.data.verbosity" :options="verbosityOptions" optionLabel="name" style="flex: 0 0 8em" @change="updateAgentDebugStatus(slotProps.data.name)"/>
             </div>
             <TreeTable :value="slotProps.data.memoryTree" class="p-treetable-sm treetable-very-sm" style="margin-bottom: 0.5em">
               <template #header>
@@ -87,7 +87,7 @@
 import { ref, watch, onMounted, onUnmounted } from "vue";
 import { useToast } from 'primevue/usetoast';
 
-import { getAgentMemory, decorateAgentMemory, decorateAgentPool, postAgentInput } from '@/functions/coordinatorService'
+import { getAgentMemory, decorateAgentMemory, decorateAgentPool, postAgentInput, getAgentDebugStatus, postAgentDebugStatusChange, postAgentDebugStep } from '@/functions/coordinatorService'
 
 export default {
   name: 'Interact',
@@ -103,7 +103,13 @@ export default {
     const layout = ref('grid')
     const countdown = ref(100)
     const interval = ref(null)
-
+    const verbosityOptions = ref([
+        {name: 'N/A'},
+        {name: 'Error'},
+        {name: 'Warning'},
+        {name: 'Info'},
+        {name: 'Debug'}
+    ])
     const updateRefreshInterval = (agentsSettings) => {
       stopRefreshInterval()
       if (agentsSettings.autoRefreshInterval != null) {
@@ -134,6 +140,16 @@ export default {
 
     const refreshAgents = () => {
       agents.value.forEach((oldAgent, index, agentsValue) => {
+        getAgentDebugStatus(oldAgent.name)
+        .then(agent => {
+          agentsValue[index].verbosity = {name: agent.status.verbosity}
+          agentsValue[index].paused = agent.status.paused
+        })
+        .catch(error => {
+          toast.add({ severity: 'error', summary: 'API Error', detail: `There has been a problem with the API operation: ${error}` })
+        })
+      })
+      agents.value.forEach((oldAgent, index, agentsValue) => {
         getAgentMemory(oldAgent.name)
         .then(agent => {
           agentsValue[index].memory = agent.memory
@@ -153,10 +169,42 @@ export default {
         agents.value.filter(a => a.name == agentName)[0].input = ''
         if (props.agentsSettings.refreshOnInput) {
           toast.add({ severity: 'success', summary: 'Input', detail: `Input performed succesfully, now updating data`, life: 3000 })
-          setTimeout(refreshAgents, 100)
+          setTimeout(refreshAgents, 250)
         } else {
           toast.add({ severity: 'success', summary: 'Input', detail: `Input performed succesfully`, life: 3000 })
         }
+      })
+      .catch(error => {
+        toast.add({ severity: 'error', summary: 'API Error', detail: `There has been a problem with the API operation: ${error}` })
+      })
+    }
+
+    const togglePause = (agentName) => {
+      let agent = agents.value.filter(a => a.name == agentName)[0]
+      agent.paused = !agent.paused
+      updateAgentDebugStatus(agentName)
+    }
+
+    const stepForward = (agentName) => {
+      postAgentDebugStep(agentName)
+      .then(() => {
+         if (props.agentsSettings.refreshOnInput) {
+          toast.add({ severity: 'success', summary: 'Debugger', detail: `Stepped succesfully, now updating data`, life: 3000 })
+          setTimeout(refreshAgents, 250)
+        } else {
+          toast.add({ severity: 'success', summary: 'Debugger', detail: `Stepped succesfully`, life: 3000 })
+        }
+      })
+      .catch(error => {
+        toast.add({ severity: 'error', summary: 'API Error', detail: `There has been a problem with the API operation: ${error}` })
+      })
+    }
+
+    const updateAgentDebugStatus = (agentName) => {
+      let agent = agents.value.filter(a => a.name == agentName)[0]
+      postAgentDebugStatusChange(agentName, agent.paused, agent.verbosity.name)
+      .then(() => {
+        toast.add({ severity: 'success', summary: 'Debugger', detail: `Debugger status updated succesfully`, life: 3000 })
       })
       .catch(error => {
         toast.add({ severity: 'error', summary: 'API Error', detail: `There has been a problem with the API operation: ${error}` })
@@ -195,8 +243,12 @@ export default {
       agents,
       layout,
       interval,
+      verbosityOptions,
       countdown,
-      sendInput
+      sendInput,
+      togglePause,
+      stepForward,
+      updateAgentDebugStatus
     }
   }
 }

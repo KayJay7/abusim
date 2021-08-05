@@ -189,3 +189,51 @@ export function postAgentInput(agentName, input) {
     return Promise.resolve(result.json)
   })
 }
+
+export function getAgentDebugStatus(agentName) {
+  return fetch(`${api}/debug/${agentName}`)
+  .then(response => response.json().then(data => ({response, json: data})))
+  .then(result => {
+    if (! result.response.ok) {
+      return Promise.reject(`${result.response.status} ${result.response.statusText}: ${result.json.error}`)
+    }
+    return Promise.resolve(result.json)
+  })
+}
+
+export function postAgentDebugStatusChange(agentName, paused, verbosity) {
+  return fetch(`${api}/debug/${agentName}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      paused,
+      verbosity
+    })
+  })
+  .then(response => response.json().then(data => ({response, json: data})))
+  .then(result => {
+    if (! result.response.ok) {
+      return Promise.reject(`${result.response.status} ${result.response.statusText}: ${result.json.error}`)
+    }
+    return Promise.resolve(result.json)
+  })
+}
+
+export function postAgentDebugStep(agentName) {
+  return fetch(`${api}/debug/${agentName}/step`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: ''
+  })
+  .then(response => response.json().then(data => ({response, json: data})))
+  .then(result => {
+    if (! result.response.ok) {
+      return Promise.reject(`${result.response.status} ${result.response.statusText}: ${result.json.error}`)
+    }
+    return Promise.resolve(result.json)
+  })
+}

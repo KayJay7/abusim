@@ -19,6 +19,7 @@ import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import SelectButton from 'primevue/selectbutton';
 import InputNumber from 'primevue/inputnumber';
+import Dropdown from 'primevue/dropdown';
 
 import 'primevue/resources/themes/saga-blue/theme.css';
 import 'primevue/resources/primevue.min.css';
@@ -52,5 +53,6 @@ app.component('Button', Button);
 app.component('Dialog', Dialog);
 app.component('SelectButton', SelectButton);
 app.component('InputNumber', InputNumber);
+app.component('Dropdown', Dropdown);
 
 app.mount('#app')
