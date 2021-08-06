@@ -22,7 +22,7 @@ type Config struct {
 type rawConfig struct {
 	Version          string                  `yaml:"version"`
 	Image            string                  `yaml:"image"`
-	CoordinatorImage string                  `yaml:"coordinatorimage"`
+	CoordinatorImage string                  `yaml:"coordinator_image"`
 	Namespace        string                  `yaml:"namespace"`
 	Includes         []string                `yaml:"includes"`
 	Agents           map[string]rawAgent     `yaml:"agents"`
@@ -35,7 +35,7 @@ type rawAgent struct {
 }
 
 type rawPrototype struct {
-	MemoryController string   `yaml:"memorycontroller"`
+	MemoryController string   `yaml:"memory_controller"`
 	Memory           []string `yaml:"memory"`
 	Rules            []string `yaml:"rules"`
 	Tick             string   `yaml:"tick"`
