@@ -26,14 +26,14 @@ agents:
       - text:room:S2
 prototypes:
   smokesensor:
-    memorycontroller: basic
+    memory_controller: basic
     tick: 1s
     memory:
       - bool:smoke:false
     rules:
       - rule notify_firesensors on smoke; for all ext.is_firesensor && ext.room == this.room do smoke = this.smoke;
   firesensor:
-    memorycontroller: basic
+    memory_controller: basic
     tick: 1s
     memory:
       - bool:is_firesensor:true
@@ -45,7 +45,7 @@ prototypes:
       - rule alarm_temp on temp; default fire = false; for this.temperature > 50 || this.smoke do fire = true;
       - rule sound_alarms on fire; for all ext.is_alarm && this.fire do sound = true;
   alarm:
-    memorycontroller: basic
+    memory_controller: basic
     tick: 1s
     memory:
       - bool:is_alarm:true
