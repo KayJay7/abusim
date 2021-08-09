@@ -104,7 +104,7 @@ export default {
     const countdown = ref(100)
     const interval = ref(null)
     const verbosityOptions = ref([
-        {name: 'N/A'},
+        {name: 'Fatal'},
         {name: 'Error'},
         {name: 'Warning'},
         {name: 'Info'},
