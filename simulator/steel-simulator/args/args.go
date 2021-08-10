@@ -16,6 +16,9 @@ const (
 // ArgsConfig represents the configuration given through the command line
 type ArgsConfig struct {
 	ConfigFile string
+	GUI        bool
+	GUIPort    int
+	GUIImage   string
 	SubCommand SubCommand
 	Detached   bool
 	FollowLogs bool
@@ -27,6 +30,9 @@ func ParseArgs() *ArgsConfig {
 	config := ArgsConfig{}
 	// ... I set up the global flags...
 	flag.StringVar(&config.ConfigFile, "c", "steel-simulator.yml", "configuration file")
+	flag.BoolVar(&config.GUI, "g", false, "spawn GUI with simulator")
+	flag.IntVar(&config.GUIPort, "gui-port", 8080, "GUI docker port")
+	flag.StringVar(&config.GUIImage, "gui-image", "steel-gui", "GUI docker image")
 	// ... I set up the "up" subcommand with its flags...
 	upCmd := flag.NewFlagSet("up", flag.ExitOnError)
 	upCmd.BoolVar(&config.Detached, "d", false, "detached")

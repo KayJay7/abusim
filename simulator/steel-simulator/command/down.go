@@ -3,12 +3,13 @@ package command
 import (
 	"fmt"
 	"log"
+	"steel-simulator/args"
 	"steel-simulator/config"
 	"steel-simulator/docker"
 )
 
 // Down tears down the simulation environment
-func Down(conf *config.Config, dcli *docker.DockerClient) {
+func Down(args *args.ArgsConfig, conf *config.Config, dcli *docker.DockerClient) {
 	log.Println("Tearing down the environment...")
 	// I range over the agents...
 	for name := range conf.Agents {
@@ -19,7 +20,13 @@ func Down(conf *config.Config, dcli *docker.DockerClient) {
 			log.Println(err)
 		}
 	}
-	// I remove the coordinator container...
+	// I eventually remove the GUI container...
+	if args.GUI {
+		if err := dcli.RemoveContainer(fmt.Sprintf("%s-gui", conf.Namespace)); err != nil {
+			log.Println(err)
+		}
+	}
+	// ... I remove the coordinator container...
 	if err := dcli.RemoveContainer(fmt.Sprintf("%s-coordinator", conf.Namespace)); err != nil {
 		log.Println(err)
 	}

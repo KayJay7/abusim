@@ -18,9 +18,15 @@ func Up(args *args.ArgsConfig, conf *config.Config, dcli *docker.DockerClient) {
 	if err := dcli.CreateNetworks(conf.Namespace); err != nil {
 		log.Fatalln(err)
 	}
-	// ... and I run the coordinator container
+	// ... I run the coordinator container...
 	if err := dcli.CreateAndRunCoordinatorContainer(conf.Namespace, conf.CoordinatorImage); err != nil {
 		log.Fatalln(err)
+	}
+	// ... and I eventually run the GUI container
+	if args.GUI {
+		if err := dcli.CreateAndRunGUIContainer(conf.Namespace, args.GUIImage, args.GUIPort); err != nil {
+			log.Fatalln(err)
+		}
 	}
 	// I create a list of the already created agents...
 	endpoints := []string{}
@@ -46,14 +52,14 @@ func Up(args *args.ArgsConfig, conf *config.Config, dcli *docker.DockerClient) {
 	// If the command it was not invoked as detached...
 	if !args.Detached {
 		// ... I create an handler to tear down the environment at exit...
-		setupCloseHandler(conf, dcli)
+		setupCloseHandler(args, conf, dcli)
 		// ... and I show the logs
 		LogsFollow(conf, dcli)
 	}
 }
 
 // setupCloseHandler waits for a SIGTERM and then tears down the environment
-func setupCloseHandler(conf *config.Config, dcli *docker.DockerClient) {
+func setupCloseHandler(args *args.ArgsConfig, conf *config.Config, dcli *docker.DockerClient) {
 	// I register for the SIGTERMs...
 	c := make(chan os.Signal)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
@@ -63,7 +69,7 @@ func setupCloseHandler(conf *config.Config, dcli *docker.DockerClient) {
 		<-c
 		fmt.Println()
 		// ... I tear down the environment...
-		Down(conf, dcli)
+		Down(args, conf, dcli)
 		// ... and I exit
 		os.Exit(0)
 	}()

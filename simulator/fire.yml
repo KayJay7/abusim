@@ -41,8 +41,8 @@ prototypes:
       - bool:fire:false
       - integer:temperature:20
     rules:
-      - rule alarm_smoke on smoke default fire = false for temperature > 50 || smoke do fire = true
-      - rule alarm_temp on temp default fire = false for temperature > 50 || smoke do fire = true
+      - rule alarm_smoke on smoke default fire = false for this.temperature > 50 || this.smoke do fire = true
+      - rule alarm_temp on temp default fire = false for this.temperature > 50 || this.smoke do fire = true
       - rule sound_alarms on fire for all ext.is_alarm && this.fire do ext.sound = true
   alarm:
     memory_controller: basic
@@ -52,4 +52,4 @@ prototypes:
       - bool:reset:false
       - bool:sound:false
     rules:
-      - rule reset_button on reset for reset do sound = false; reset = false
+      - rule reset_button on reset for this.reset do sound = false; reset = false

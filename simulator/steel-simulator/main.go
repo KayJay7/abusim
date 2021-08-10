@@ -26,7 +26,7 @@ func main() {
 	case args.SUBCOMMAND_UP:
 		command.Up(argsConfig, conf, dcli)
 	case args.SUBCOMMAND_DOWN:
-		command.Down(conf, dcli)
+		command.Down(argsConfig, conf, dcli)
 	case args.SUBCOMMAND_LOGS:
 		if argsConfig.FollowLogs {
 			command.LogsFollow(conf, dcli)
