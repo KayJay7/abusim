@@ -24,7 +24,7 @@ Usage of steel-simulator:
 ```
 
 `steel-simulator` is always run with a subcommand:
-- `up`, to create the environment. The default behaviour is to create the environment, show the logs and finally destroying it. To prevent this, uste the additional flag is `-d` (*detached*), to run the command and release the console.
+- `up`, to create the environment. The default behaviour is to create the environment, show the logs and finally destroying it. To prevent this, use the additional flag is `-d` (*detached*), to run the command and release the console.
 - `down`, to destroy the environment.
 - `logs`, to get the logs of the running containers (except the GUI). To continue showing the incoming log lines use the `-f` (*follow*) flag.
 
@@ -42,7 +42,7 @@ The syntax is the following:
 
 A *prototype* is a mean to define a common structure for similar agents. It is formed by several fields:
 - `memory_controller`, to define the controller for the memory, i.e. the implementation. At the moment the only valid controller is `basic` (i.e. the usual data types: bool, integer, float, text and time).
-- `tick`, to define the refresh rate, i.e. the minimum time between two Exec().
+- `tick`, to define the refresh rate, i.e. the minimum time between two Exec() (default 1s).
 - `memory`, a list of strings representing the variables. The string must be in the format `<type>:<identifier>[:<initialization_value>]`, where `[...]` denotes an optional argument.
 - `rules`, a list of rules, according to the language specification.
 
