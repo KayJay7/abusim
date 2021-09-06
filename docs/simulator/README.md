@@ -99,14 +99,20 @@ The provided example modifies the temperature of a room according to the HVAC st
 ## Example
 The repository provides an example.
 
+Move to the `steel-simulator-gui` folder.
+
+Build the image for the gui:
+```shell
+./build.sh
+```
+
 Move to the `steel-simulator` folder.
 
-Build the images for the agents, coordinator and gui:
+Build the images for the agents and the coordinator:
 ```shell
 ../steel-simulator-agent/build.sh
 ../steel-simulator-coordinator/build.sh
-../steel-simulator-gui/build.sh
-``` 
+```
 
 Then run
 ```shell
