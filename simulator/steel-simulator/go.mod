@@ -2,10 +2,7 @@ module steel-simulator
 
 go 1.16
 
-replace (
-	steel-lang => ../../src
-	steel-simulator-common => ../steel-simulator-common
-)
+replace steel-simulator-common => ../steel-simulator-common
 
 require (
 	github.com/Microsoft/go-winio v0.5.0 // indirect
@@ -19,3 +16,5 @@ require (
 	gopkg.in/yaml.v2 v2.4.0
 	steel-simulator-common v0.0.0
 )
+
+replace steel => ../../steel
