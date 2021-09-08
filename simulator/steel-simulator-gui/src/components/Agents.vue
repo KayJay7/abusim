@@ -67,22 +67,26 @@ export default {
       let configs = [], agentsLists = [], configTrees = []
       current.forEach(configFile => {
         var configDoc = configParse(configFile.content)
-        if (configDoc != null) {
+        if (configDoc) {
           configs.push(configDoc)
-          agentsLists.push(Object.keys(configDoc['agents']))
-          let configDocTree = getConfigTree(configDoc)
-          configDocTree[0].children.forEach((agentTree) => {
-            getAgentConfig(agentTree.label)
-            .then(agent => {
-              decorateAgentTree(configDocTree, agent)
+          if (configDoc.agents) {
+            agentsLists.push(Object.keys(configDoc['agents']))
+            let configDocTree = getConfigTree(configDoc)
+            configDocTree[0].children.forEach((agentTree) => {
+              getAgentConfig(agentTree.label)
+              .then(agent => {
+                decorateAgentTree(configDocTree, agent)
+              })
+              .catch(error => {
+                toast.add({ severity: 'error', summary: 'API Error', detail: `There has been a problem with the API operation: ${error}` })
+              })
             })
-            .catch(error => {
-              toast.add({ severity: 'error', summary: 'API Error', detail: `There has been a problem with the API operation: ${error}` })
-            })
-          })
-          configTrees.push(configDocTree)
+            configTrees.push(configDocTree)
+          } else {
+            toast.add({ severity: 'warn', summary: 'Empty config', detail: `The provided configuration (${configFile.filename}) does not contain any agent. Maybe avoid loading the file next time?` })
+          }
         } else {
-          toast.add({ severity: 'error', summary: 'Invalid config', detail: 'The provided configuration is not a valid YAML file or is not semantically valid' })
+          toast.add({ severity: 'error', summary: 'Invalid config', detail: `The provided configuration (${configFile.filename}) is not a valid YAML file or is not semantically valid` })
         }
       })
       agentsList.value = agentsLists.flat().sort()
