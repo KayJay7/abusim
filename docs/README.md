@@ -1,29 +1,29 @@
-# µSteel simulator
-The µSteel simulator project aims to provide an environment to simulate and test µSteel language. The core idea is to easily and automatically create and simulate a complex network of agents running µSteel-lang.
+# abusim
+The abusim project aims to provide an environment to simulate and test the AbU language. The core idea is to easily and automatically create and simulate a complex network of agents running AbU-lang.
 
-This is achieved through the use of Docker. µSteel simulator provides a simple way to model the underlying network and its actors. It mimics the work of docker-compose, but in a specialized way.
+This is achieved through the use of Docker. abusim provides a simple way to model the underlying network and its actors. It mimics the work of docker-compose, but in a specialized way.
 
 Here I describe the simulator parts and I describe an example.
 
-## steel-simulator
-`steel-simulator` is the main command to set up and execute the simulation. It is written in Go and built using `go build`.
+## abusim
+`abusim` is the main command to set up and execute the simulation. It is written in Go and built using `go build`.
 
-It creates the µSteel agents defined in a configuration file, a coordinator to interact (get/set memory, pause, step...) with the agents, the data and control network, and, optionally, a GUI (served as a web application).
+It creates the AbU agents defined in a configuration file, a coordinator to interact (get/set memory, pause, step...) with the agents, the data and control network, and, optionally, a GUI (served as a web application).
 
 It assumes a running instance of the Docker daemon on the host machine. Moreover, the Docker images of the agent, coordinator and GUI needs to be found on the machine. These can be built using the `build.sh` script in the relevant directories.
 
 ```
-Usage of steel-simulator:
+Usage of abusim:
   -c string
-        configuration file (default "steel-simulator.yml")
+        configuration file (default "abusim.yml")
   -g    spawn GUI with simulator
   -gui-image string
-        GUI docker image (default "steel-gui")
+        GUI docker image (default "abusim-gui")
   -gui-port int
         GUI docker port (default 8080)
 ```
 
-`steel-simulator` is always run with a subcommand:
+`abusim` is always run with a subcommand:
 - `up`, to create the environment. The default behaviour is to create the environment, show the logs and finally destroying it. To prevent this, use the additional flag is `-d` (*detached*), to run the command and release the console.
 - `down`, to destroy the environment.
 - `logs`, to get the logs of the running containers (except the GUI). To continue showing the incoming log lines use the `-f` (*follow*) flag.
@@ -50,7 +50,7 @@ An *agent* is so defined:
 - `prototype`, optional, to define a prototype to specialize the agent from.
 - any field from the *prototype* definition, optional. These fields have priority over the prototype ones, e.g. if the prototype defines the variable `k` to have value `pluto` and the agents redefines it as `pippo`, the valid initialization value will be `pippo`.
 
-## steel-simulator-gui
+## abusim-gui
 The GUI is a web application. The default URL is http://localhost:8080
 
 The GUI interface is self-explanatory, but a couple things may be added:
@@ -68,12 +68,12 @@ The upper bar allows for:
 
 ![An example interaction card](interact.png)
 
-## steel-simulator-environment
-`steel-simulator-environment` is the a command to execute the an environment for the simulation. It is written in Python3 and can be run with the `python` interpreter.
+## abusim-environment
+`abusim-environment` is the a command to execute the an environment for the simulation. It is written in Python3 and can be run with the `python` interpreter.
 
 Its goal is to simulate a physical environment for the simulation. For example, it can automatically change the temperature registered on a sensor agent as the change comes from a physical termocouple.
 
-It is configured directely by editing the `steel-simulator-environment.py` script, between the tags `BEGIN user defined code` and `END user defined code`.
+It is configured directely by editing the `abusim-environment.py` script, between the tags `BEGIN user defined code` and `END user defined code`.
 
 The customization is done via `env.on('<agent>', '<variable>', <tick>, <action_callback>)`. This means that every `<tick>` seconds the value of the `<variable>` of the `<agent>` is retrieved from the coordinator and `<action_callback>` is executed.
 
@@ -99,28 +99,26 @@ The provided example modifies the temperature of a room according to the HVAC st
 ## Example
 The repository provides an example.
 
-Move to the `steel-simulator-gui` folder.
+Move to the `gui` folder.
 
 Build the image for the gui:
 ```shell
 ./build.sh
 ```
 
-Move to the `steel-simulator` folder.
-
-Build the images for the agents and the coordinator:
+Build the images for the agents and the coordinator (use for example the Golang implementation at https://github.com/abu-lang/abusim-core and https://github.com/abu-lang/abusim-goabu-agent):
 ```shell
-../steel-simulator-agent/build.sh
-../steel-simulator-coordinator/build.sh
+./agent/build.sh
+./coordinator/build.sh
 ```
 
-Then run
+Then move to the `abusim` folder and run:
 ```shell
-go build && ./steel-simulator -c ../steel-simulator.yml -g up
+go build && ./abusim -c ../abusim.yml -g up
 ```
 to start the simulation.
 
-To start the environment run `steel-simulator-environment.py` from the environment folder.
+To start the environment run `abusim-environment.py` from the environment folder.
 
 The GUI is at http://localhost:8080
 
