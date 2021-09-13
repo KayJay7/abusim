@@ -1,1 +1,1 @@
-docker build . -t steel-gui
+docker build . -t abusim-gui

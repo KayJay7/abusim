@@ -1,4 +1,4 @@
-# steel-simulator-gui
+# abusim-gui
 
 ## Project setup
 ```

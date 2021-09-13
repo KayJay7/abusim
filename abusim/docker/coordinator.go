@@ -32,7 +32,7 @@ func (d DockerClient) CreateAndRunCoordinatorContainer(namespace, image string) 
 		EndpointsConfig: map[string]*network.EndpointSettings{
 			fmt.Sprintf("%s-control", namespace): {
 				NetworkID: fmt.Sprintf("%s-control", namespace),
-				Aliases:   []string{"steel-coordinator"},
+				Aliases:   []string{"abusim-coordinator"},
 			},
 		},
 	}
