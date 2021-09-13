@@ -66,7 +66,7 @@ The upper bar allows for:
 - performing an Input() on the agent.
 - setting the verbosity level.
 
-![An example interaction card](interact.png)
+![An example interaction card](docs/interact.png)
 
 ## abusim-environment
 `abusim-environment` is the a command to execute the an environment for the simulation. It is written in Python3 and can be run with the `python` interpreter.
