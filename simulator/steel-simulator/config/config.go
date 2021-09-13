@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"log"
 	"path"
-	"steel-simulator-common/config"
 
 	"gopkg.in/yaml.v2"
 )
@@ -15,7 +14,7 @@ type Config struct {
 	Image            string
 	CoordinatorImage string
 	Namespace        string
-	Agents           map[string]config.Agent
+	Agents           map[string]Agent
 }
 
 // rawConfig represents a YAML configuration file
@@ -62,11 +61,11 @@ func parseVersion1dot0(rawConfig rawConfig, base string) (*Config, error) {
 	conf.CoordinatorImage = rawConfig.CoordinatorImage
 	conf.Namespace = rawConfig.Namespace
 	// ... and I create a map for the agents
-	conf.Agents = make(map[string]config.Agent)
+	conf.Agents = make(map[string]Agent)
 	// I loop over the raw configuration agents...
 	for name, agent := range rawConfig.Agents {
 		// I create the new agent structure
-		configAgent := config.NewAgent(name)
+		configAgent := NewAgent(name)
 		// If it has a prototype...
 		if agent.Prototype != "" {
 			// ... I check if the prototype exists...
