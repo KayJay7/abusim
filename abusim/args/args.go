@@ -29,7 +29,7 @@ func ParseArgs() *ArgsConfig {
 	// I create an empty configuration...
 	config := ArgsConfig{}
 	// ... I set up the global flags...
-	flag.StringVar(&config.ConfigFile, "c", "steel-simulator.yml", "configuration file")
+	flag.StringVar(&config.ConfigFile, "c", "abusim.yml", "configuration file")
 	flag.BoolVar(&config.GUI, "g", false, "spawn GUI with simulator")
 	flag.IntVar(&config.GUIPort, "gui-port", 8080, "GUI docker port")
 	flag.StringVar(&config.GUIImage, "gui-image", "steel-gui", "GUI docker image")

@@ -1,7 +1,0 @@
-version: "1.0"
-image: "steel-agent"
-coordinator_image: "steel-coordinator"
-namespace: "steel-simulator-example"
-includes:
-  - fire.yml
-  - hvac.yml

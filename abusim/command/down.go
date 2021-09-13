@@ -1,11 +1,11 @@
 package command
 
 import (
+	"abusim/args"
+	"abusim/config"
+	"abusim/docker"
 	"fmt"
 	"log"
-	"steel-simulator/args"
-	"steel-simulator/config"
-	"steel-simulator/docker"
 )
 
 // Down tears down the simulation environment

@@ -1,4 +1,4 @@
-module steel-simulator
+module abusim
 
 go 1.16
 

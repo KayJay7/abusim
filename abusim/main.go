@@ -2,10 +2,10 @@ package main
 
 import (
 	"log"
-	"steel-simulator/args"
-	"steel-simulator/command"
-	"steel-simulator/config"
-	"steel-simulator/docker"
+	"abusim/args"
+	"abusim/command"
+	"abusim/config"
+	"abusim/docker"
 )
 
 func main() {
