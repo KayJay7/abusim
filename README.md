@@ -114,7 +114,7 @@ Build the images for the agents and the coordinator (use for example the Golang 
 
 Then move to the `abusim` folder and run:
 ```shell
-go build && ./abusim -c ../abusim.yml -g up
+go build && ./abusim -c ../example/abusim.yml -g up
 ```
 to start the simulation.
 
