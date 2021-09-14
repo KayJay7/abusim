@@ -37,7 +37,7 @@ func Up(args *args.ArgsConfig, conf *config.Config, dcli *docker.DockerClient) {
 		// ... I set the container name...
 		containerName := fmt.Sprintf("%s-%s", conf.Namespace, name)
 		// ... and I set the configuration serialization
-		agentSerialization, err := agent.Serialize()
+		agentSerialization, err := agent.ToAgentConfiguration().Serialize()
 		if err != nil {
 			log.Fatalln(err)
 		}

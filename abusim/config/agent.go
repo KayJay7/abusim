@@ -1,12 +1,11 @@
 package config
 
 import (
-	"bytes"
-	"encoding/base64"
-	"encoding/gob"
 	"fmt"
 	"strings"
 	"time"
+
+	"github.com/abu-lang/abusim-core/schema"
 )
 
 // Agent represents an agent config
@@ -91,14 +90,14 @@ func (a *Agent) SetTick(tick string) error {
 	return nil
 }
 
-// Serialize returns the agent as a string
-func (a *Agent) Serialize() (string, error) {
-	// I encode the agent as bytes...
-	b := bytes.Buffer{}
-	err := gob.NewEncoder(&b).Encode(a)
-	if err != nil {
-		return "", err
+// ToAgentConfiguration converts the current agent to a valid schema AgentConfiguration
+func (a *Agent) ToAgentConfiguration() *schema.AgentConfiguration {
+	return &schema.AgentConfiguration{
+		Name:             a.Name,
+		MemoryController: a.MemoryController,
+		Memory:           a.Memory,
+		Rules:            a.Rules,
+		Endpoints:        a.Endpoints,
+		Tick:             a.Tick,
 	}
-	// ... and I encode them in Base64
-	return base64.StdEncoding.EncodeToString(b.Bytes()), nil
 }
