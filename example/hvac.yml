@@ -1,0 +1,57 @@
+version: "1.0"
+agents:
+  temp_S1:
+    prototype: tempsensor
+    memory:
+      - text:room:S1
+  knob_S1:
+    prototype: tempknob
+    memory:
+      - text:room:S1
+  conv_S1:
+    prototype: convector
+    memory:
+      - text:room:S1
+  temp_S2:
+    prototype: tempsensor
+    memory:
+      - text:room:S2
+  knob_S2:
+    prototype: tempknob
+    memory:
+      - text:room:S2
+  conv_S2:
+    prototype: convector
+    memory:
+      - text:room:S2
+prototypes:
+  tempsensor:
+    memory_controller: basic
+    tick: 1s
+    memory:
+      - integer:temperature:20
+    rules:
+      - rule notify_convectors on temperature for all ext.is_convector && ext.room == this.room do ext.current = this.temperature
+      - rule notify_firesensors on temperature for all ext.is_firesensor && ext.room == this.room do ext.temperature = this.temperature
+  tempknob:
+    memory_controller: basic
+    tick: 1s
+    memory:
+      - integer:set:20
+    rules:
+      - rule notify_convectors on set for all ext.is_convector && ext.room == this.room do ext.target = this.set
+  convector:
+    memory_controller: basic
+    tick: 1s
+    memory:
+      - bool:is_convector:true
+      - integer:current:20
+      - integer:target:20
+      - text:action:nothing
+    rules:
+      - rule increase_temp_curr on current for this.current < this.target do action = "increase"
+      - rule decrease_temp_curr on current for this.current > this.target do action = "decrease"
+      - rule nothing_temp_curr on current for this.current == this.target do action = "nothing"
+      - rule increase_temp_targ on target for this.current < this.target do action = "increase"
+      - rule decrease_temp_targ on target for this.current > this.target do action = "decrease"
+      - rule nothing_temp_targ on target for this.current == this.target do action = "nothing"
