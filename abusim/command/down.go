@@ -1,11 +1,12 @@
 package command
 
 import (
-	"abusim/args"
-	"abusim/config"
-	"abusim/docker"
 	"fmt"
 	"log"
+
+	"github.com/abu-lang/abusim/abusim/args"
+	"github.com/abu-lang/abusim/abusim/config"
+	"github.com/abu-lang/abusim/abusim/docker"
 )
 
 // Down tears down the simulation environment

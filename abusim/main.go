@@ -2,10 +2,11 @@ package main
 
 import (
 	"log"
-	"abusim/args"
-	"abusim/command"
-	"abusim/config"
-	"abusim/docker"
+
+	"github.com/abu-lang/abusim/abusim/args"
+	"github.com/abu-lang/abusim/abusim/command"
+	"github.com/abu-lang/abusim/abusim/config"
+	"github.com/abu-lang/abusim/abusim/docker"
 )
 
 func main() {

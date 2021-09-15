@@ -1,14 +1,15 @@
 package command
 
 import (
-	"abusim/args"
-	"abusim/config"
-	"abusim/docker"
 	"fmt"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
+
+	"github.com/abu-lang/abusim/abusim/args"
+	"github.com/abu-lang/abusim/abusim/config"
+	"github.com/abu-lang/abusim/abusim/docker"
 )
 
 // Up brings up the simulation environment

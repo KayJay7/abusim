@@ -1,11 +1,12 @@
 package command
 
 import (
-	"abusim/config"
-	"abusim/docker"
 	"fmt"
 	"log"
 	"sync"
+
+	"github.com/abu-lang/abusim/abusim/config"
+	"github.com/abu-lang/abusim/abusim/docker"
 )
 
 // LogsFollow prints the logs of the containers continuously
