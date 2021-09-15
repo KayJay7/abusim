@@ -14,5 +14,3 @@ require (
 	gopkg.in/yaml.v2 v2.4.0
 	github.com/abu-lang/abusim-core/schema v0.0.0
 )
-
-replace github.com/abu-lang/abusim-core/schema => ../../abusim-core-dev/schema
