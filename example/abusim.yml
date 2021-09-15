@@ -1,0 +1,7 @@
+version: "1.0"
+image: "abusim-goabu-agent"
+coordinator_image: "abusim-coordinator"
+namespace: "abusim-example"
+includes:
+  - fire.yml
+  - hvac.yml

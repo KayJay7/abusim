@@ -1,0 +1,28 @@
+{
+  "name": "abusim-gui",
+  "version": "0.1.0",
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint"
+  },
+  "dependencies": {
+    "core-js": "^3.6.5",
+    "js-yaml": "^3.14.1",
+    "mitt": "^2.1.0",
+    "primeflex": "^2.0.0",
+    "primeicons": "4.1.0",
+    "primevue": "3.6.0",
+    "vue": "3.0.3",
+    "vue3-highlightjs": "^1.0.5"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "~4.5.0",
+    "@vue/cli-plugin-eslint": "~4.5.0",
+    "@vue/cli-service": "~4.5.0",
+    "@vue/compiler-sfc": "^3.0.0-0",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^6.7.2",
+    "eslint-plugin-vue": "^7.0.0-0"
+  }
+}
