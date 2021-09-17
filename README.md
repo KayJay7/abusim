@@ -1,11 +1,11 @@
-# abusim
-The abusim project aims to provide an environment to simulate and test the AbU language. The core idea is to easily and automatically create and simulate a complex network of agents running AbU-lang.
+# AbUsim
+The AbUsim project aims to provide an environment to simulate and test the AbU language. The core idea is to easily and automatically create and simulate a complex network of agents running AbU-lang.
 
-This is achieved through the use of Docker. abusim provides a simple way to model the underlying network and its actors. It mimics the work of docker-compose, but in a specialized way.
+This is achieved through the use of [Docker](https://www.docker.com/). AbUsim provides a simple way to model the underlying network and its actors. It mimics the work of `docker-compose`, but in a specialized way.
 
-Here I describe the simulator parts and I describe an example.
+Here a description of the simulator parts and an usage example.
 
-## abusim
+## AbU simulator
 `abusim` is the main command to set up and execute the simulation. It is written in Go and built using `go build`.
 
 It creates the AbU agents defined in a configuration file, a coordinator to interact (get/set memory, pause, step...) with the agents, the data and control network, and, optionally, a GUI (served as a web application).
@@ -50,12 +50,12 @@ An *agent* is so defined:
 - `prototype`, optional, to define a prototype to specialize the agent from.
 - any field from the *prototype* definition, optional. These fields have priority over the prototype ones, e.g. if the prototype defines the variable `k` to have value `pluto` and the agents redefines it as `pippo`, the valid initialization value will be `pippo`.
 
-## abusim-gui
+## Graphical User Interface
 The GUI is a web application. The default URL is http://localhost:8080
 
 The GUI interface is self-explanatory, but a couple things may be added:
 - every interaction is done via the *plus* button on the bottom right. This allows for configuration loading and unloading, data refreshing and access to settings.
-- Partial configuration are allowed. If a partial configuration (i.e. a include) is uploaded, only agents defined there are showed.
+- Partial configuration are allowed. If a partial configuration (i.e., a include) is uploaded, only agents defined there are showed.
 - The *Explore* tab shows the exact configuration of the agent at the moment of creation.
 
 The *Interact* tab shows a card for each agent. Inside of it the agent state (memory and pool) and all of the interaction possibilities are presented.
@@ -66,10 +66,12 @@ The upper bar allows for:
 - performing an Input() on the agent.
 - setting the verbosity level.
 
-![An example interaction card](docs/interact.png)
+<p align="center">
+  <img width="450" height="400" src="docs/interact.png">
+</p>
 
-## abusim-environment
-`abusim-environment` is the a command to execute the an environment for the simulation. It is written in Python3 and can be run with the `python` interpreter.
+## AbU environment
+`abusim-environment`, that is part of the [`abusim-core`](https://github.com/abu-lang/abusim-core) package, is the command to execute an environment for the simulation. It is written in Python3 and can be run with the `python` interpreter.
 
 Its goal is to simulate a physical environment for the simulation. For example, it can automatically change the temperature registered on a sensor agent as the change comes from a physical termocouple.
 
@@ -106,7 +108,7 @@ Build the image for the gui:
 ./build.sh
 ```
 
-Build the images for the agents and the coordinator (use for example the Golang implementation at https://github.com/abu-lang/abusim-core and https://github.com/abu-lang/abusim-goabu-agent):
+Build the images for the coordinator (contained in the [`abusim-core`](https://github.com/abu-lang/abusim-core) package) and the agents (use for example the Golang implementation privided by the [`abusim-goabu-agent`](https://github.com/abu-lang/abusim-goabu-agent) package):
 ```shell
 ./agent/build.sh
 ./coordinator/build.sh
