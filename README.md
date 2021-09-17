@@ -71,7 +71,7 @@ The upper bar allows for:
 </p>
 
 ## AbU environment
-`abusim-environment`, that is part of the [`abusim-core`](https://github.com/abu-lang/abusim-core) package, is the command to execute an environment for the simulation. It is written in Python3 and can be run with the `python` interpreter.
+`abusim-environment`, that is part of the [`abusim-core`](https://github.com/abu-lang/abusim-core) package, provides the script `abusim-environment.py` to execute an environment for the simulation. It is written in Python3 and can be run with the `python` interpreter.
 
 Its goal is to simulate a physical environment for the simulation. For example, it can automatically change the temperature registered on a sensor agent as the change comes from a physical termocouple.
 
@@ -101,26 +101,19 @@ The provided example modifies the temperature of a room according to the HVAC st
 ## Example
 The repository provides an example.
 
-Move to the `gui` folder.
+Build the images for the coordinator (contained in the [`abusim-core`](https://github.com/abu-lang/abusim-core) package) and the agents (use for example the Golang implementation privided by the [`abusim-goabu-agent`](https://github.com/abu-lang/abusim-goabu-agent) package). Place the images in the simulator root directory.
 
-Build the image for the gui:
+Move to the `gui` folder, and build the image for the gui:
 ```shell
 ./build.sh
 ```
-
-Build the images for the coordinator (contained in the [`abusim-core`](https://github.com/abu-lang/abusim-core) package) and the agents (use for example the Golang implementation privided by the [`abusim-goabu-agent`](https://github.com/abu-lang/abusim-goabu-agent) package):
-```shell
-./agent/build.sh
-./coordinator/build.sh
-```
-
 Then move to the `abusim` folder and run:
 ```shell
 go build && ./abusim -c ../example/abusim.yml -g up
 ```
 to start the simulation.
 
-To start the environment run `abusim-environment.py` from the environment folder.
+To start the environment run the Python3 script `abusim-environment.py` provided by the [`abusim-core`](https://github.com/abu-lang/abusim-core) package.
 
 The GUI is at http://localhost:8080
 
