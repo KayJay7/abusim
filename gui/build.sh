@@ -1,1 +1,1 @@
-docker build . -t abusim-gui
+docker build . -t abulang/abusim-gui

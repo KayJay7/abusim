@@ -101,19 +101,25 @@ The provided example modifies the temperature of a room according to the HVAC st
 ## Example
 The repository provides an example.
 
-Build the images for the coordinator (contained in the [`abusim-core`](https://github.com/abu-lang/abusim-core) package) and the agents (use for example the Golang implementation privided by the [`abusim-goabu-agent`](https://github.com/abu-lang/abusim-goabu-agent) package). Place the images in the simulator root directory.
-
-Move to the `gui` folder, and build the image for the gui:
+We provide the Docker images for the GUI, the coordinator and the agent on DockerHub. To get them use:
 ```shell
-./build.sh
+docker pull abulang/abusim-gui:latest
+docker pull abulang/abusim-coordinator:latest
+docker pull abulang/abusim-goabu-agent:latest
 ```
+
+If you prefer, you can build them yourself with the `build.sh` script in the relevant folders:
+- The GUI is in this repository, in the `gui` directory
+- The Coordinator is in the [`abusim-core`](https://github.com/abu-lang/abusim-core) repository, in the `abusim-coordinator` directory
+- The Agent (implemented with goabu) is in the [`abusim-goabu-agent`](https://github.com/abu-lang/abusim-goabu-agent) repository
+
 Then move to the `abusim` folder and run:
 ```shell
 go build && ./abusim -c ../example/abusim.yml -g up
 ```
 to start the simulation.
 
-To start the environment run the Python3 script `abusim-environment.py` provided by the [`abusim-core`](https://github.com/abu-lang/abusim-core) package.
+To start the environment run the Python3 script `abusim-environment.py` provided in the [`abusim-core`](https://github.com/abu-lang/abusim-core) repository, in the `abusim-environment` directory.
 
 The GUI is at http://localhost:8080
 

@@ -1,6 +1,6 @@
 version: "1.0"
-image: "abusim-goabu-agent"
-coordinator_image: "abusim-coordinator"
+image: "abulang/abusim-goabu-agent:latest"
+coordinator_image: "abulang/abusim-coordinator:latest"
 namespace: "abusim-example"
 includes:
   - fire.yml

@@ -32,7 +32,7 @@ func ParseArgs() *ArgsConfig {
 	flag.StringVar(&config.ConfigFile, "c", "abusim.yml", "configuration file")
 	flag.BoolVar(&config.GUI, "g", false, "spawn GUI with simulator")
 	flag.IntVar(&config.GUIPort, "gui-port", 8080, "GUI docker port")
-	flag.StringVar(&config.GUIImage, "gui-image", "abusim-gui", "GUI docker image")
+	flag.StringVar(&config.GUIImage, "gui-image", "abulang/abusim-gui:latest", "GUI docker image")
 	// ... I set up the "up" subcommand with its flags...
 	upCmd := flag.NewFlagSet("up", flag.ExitOnError)
 	upCmd.BoolVar(&config.Detached, "d", false, "detached")
