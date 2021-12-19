@@ -15,8 +15,8 @@ import (
 // CreateAndRunAgentContainer creates and runs a container for an agent
 func (d DockerClient) CreateAndRunAgentContainer(namespace, image, containerName, agentSerialization string) error {
 	// I prepare the command line for the agent...
-	cmd := []string{agentSerialization}
 	// ... I prepare the network configuration to join the data network...
+	fmt.Printf("Begun agent creation: %v\n", containerName)
 	networkConfig := &network.NetworkingConfig{
 		EndpointsConfig: map[string]*network.EndpointSettings{
 			fmt.Sprintf("%s-data", namespace): {
@@ -30,18 +30,32 @@ func (d DockerClient) CreateAndRunAgentContainer(namespace, image, containerName
 		"5000/tcp": struct{}{},
 		"5001/tcp": struct{}{},
 	}
-	//  ... I prepare the container configuration, passing the image, name, command and ports...
+	// ... I prepare the container configuration, passing the image, name, stdin configuration and ports...
 	config := &container.Config{
 		Image:        image,
 		Hostname:     containerName,
-		Cmd:          cmd,
 		ExposedPorts: exposedPorts,
+		AttachStdin:  true,
+		OpenStdin:    true,
 	}
+	// ... I also need to configure CPUs
+	hostConfig := &container.HostConfig{
+		Resources: container.Resources{
+			CPUCount:  1,
+			CPUShares: 1024,
+		},
+	}
+	// ... and prepare the attach configuration to connect to stdin
+	attachConfig := types.ContainerAttachOptions{
+		Stream: false, // We don't need blocking operations
+		Stdin:  true,
+	}
+
 	// ... and I create the container, with the container and network configuration
 	cont, err := d.client.ContainerCreate(
 		context.Background(),
 		config,
-		nil,
+		hostConfig,
 		networkConfig,
 		nil,
 		containerName,
@@ -58,15 +72,31 @@ func (d DockerClient) CreateAndRunAgentContainer(namespace, image, containerName
 		}
 		return err
 	}
+	fmt.Printf("Created container: %v\n", containerName)
 	// I join the control network, since the network configuration only allows for a single network to be specified...
 	if err := d.client.NetworkConnect(context.Background(), fmt.Sprintf("%s-control", namespace), cont.ID, nil); err != nil {
 		return err
 	}
-	// ... and I start the container
+	// ... and start the container...
 	err = d.client.ContainerStart(context.Background(), cont.ID, types.ContainerStartOptions{})
 	if err != nil {
 		return err
 	}
+	fmt.Printf("Started container: %v\n", containerName)
+	// ... and finally I stream the agent serialization on stdin
+	conn, err := d.client.ContainerAttach(
+		context.Background(),
+		cont.ID,
+		attachConfig,
+	)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("Attached container: %v\n", containerName)
+	conn.Conn.Write([]byte(agentSerialization))
+	conn.Conn.Write([]byte{'\n'}) // Unix files must end with /n
+	conn.CloseWrite()
+	conn.Conn.Close()
 	log.Printf("Created container \"%s\" with ID %s", containerName, cont.ID)
 	return nil
 }
