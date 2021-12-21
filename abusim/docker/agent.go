@@ -47,7 +47,7 @@ func (d DockerClient) CreateAndRunAgentContainer(namespace, image, containerName
 	}
 	// ... and prepare the attach configuration to connect to stdin
 	attachConfig := types.ContainerAttachOptions{
-		Stream: false, // We don't need blocking operations
+		Stream: true,
 		Stdin:  true,
 	}
 
@@ -77,12 +77,6 @@ func (d DockerClient) CreateAndRunAgentContainer(namespace, image, containerName
 	if err := d.client.NetworkConnect(context.Background(), fmt.Sprintf("%s-control", namespace), cont.ID, nil); err != nil {
 		return err
 	}
-	// ... and start the container...
-	err = d.client.ContainerStart(context.Background(), cont.ID, types.ContainerStartOptions{})
-	if err != nil {
-		return err
-	}
-	fmt.Printf("Started container: %v\n", containerName)
 	// ... and finally I stream the agent serialization on stdin
 	conn, err := d.client.ContainerAttach(
 		context.Background(),
@@ -95,6 +89,12 @@ func (d DockerClient) CreateAndRunAgentContainer(namespace, image, containerName
 	fmt.Printf("Attached container: %v\n", containerName)
 	conn.Conn.Write([]byte(agentSerialization))
 	conn.Conn.Write([]byte{'\n'}) // Unix files must end with /n
+	// ... and start the container...
+	err = d.client.ContainerStart(context.Background(), cont.ID, types.ContainerStartOptions{})
+	if err != nil {
+		return err
+	}
+	fmt.Printf("Started container: %v\n", containerName)
 	conn.CloseWrite()
 	conn.Conn.Close()
 	log.Printf("Created container \"%s\" with ID %s", containerName, cont.ID)
