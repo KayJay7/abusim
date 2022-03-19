@@ -36,6 +36,7 @@ func (d DockerClient) CreateAndRunAgentContainer(namespace, image, containerName
 		Hostname:     containerName,
 		ExposedPorts: exposedPorts,
 		AttachStdin:  true,
+		AttachStdout: true,
 		OpenStdin:    true,
 	}
 	// ... I also need to configure CPUs
@@ -49,6 +50,7 @@ func (d DockerClient) CreateAndRunAgentContainer(namespace, image, containerName
 	attachConfig := types.ContainerAttachOptions{
 		Stream: true,
 		Stdin:  true,
+		Stdout: true,
 	}
 
 	// ... and I create the container, with the container and network configuration
@@ -95,8 +97,16 @@ func (d DockerClient) CreateAndRunAgentContainer(namespace, image, containerName
 		return err
 	}
 	fmt.Printf("Started container: %v\n", containerName)
-	conn.CloseWrite()
-	conn.Conn.Close()
+
+	okBuf := make([]byte, 20)
+	bytes, err := conn.Conn.Read(okBuf)
+	if bytes == 0 {
+		fmt.Printf("Received error from %v: %v\n", containerName, err)
+	} else {
+		fmt.Printf("Received ok from %v: %v\n", containerName, string(okBuf))
+	}
+	//time.Sleep(time.Second * 5)
 	log.Printf("Created container \"%s\" with ID %s", containerName, cont.ID)
+	conn.Close()
 	return nil
 }

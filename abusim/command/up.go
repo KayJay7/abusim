@@ -48,7 +48,9 @@ func Up(args *args.ArgsConfig, conf *config.Config, dcli *docker.DockerClient) {
 			log.Fatalln(err)
 		}
 		// ... and I append it to the created agent endpoints
-		endpoints = append(endpoints, fmt.Sprintf("%s-on-data:5000", containerName))
+		if len(endpoints) < 1 {
+			endpoints = append(endpoints, fmt.Sprintf("%s-on-data:5000", containerName))
+		}
 	}
 	// If the command it was not invoked as detached...
 	if !args.Detached {
